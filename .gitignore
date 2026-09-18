@@ -10,6 +10,10 @@
 node_modules/
 *.log
 *.tsbuildinfo
+next-env.d.ts
+
+# Local SQLite data (never the source of truth; see migrations/)
+/data/
 
 # Web / build artifacts
 .next/

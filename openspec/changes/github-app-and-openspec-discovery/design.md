@@ -115,6 +115,12 @@ Screens: GitHub sign-in; post-install Setup URL completion; installation picker 
 
 Empty and error copy must distinguish: App not installed, user has no overlapping repos, GitHub listing failed, `unsupported`, `permission-blocked`.
 
+**Refresh acquires a user token by redirecting through OAuth.** Refresh must re-run listing as well as discovery, and listing (`GET /user/installations/{id}/repositories`) requires the user-to-server token per Decision 2 — which Decision 7 deliberately never stores. A Refresh request therefore holds no credential that can list, and an installation token must not be substituted: it authenticates as the App and would expose repositories the user cannot access. So Refresh redirects through GitHub's OAuth authorize endpoint, carrying the current installation in the OAuth `state` parameter, and the callback performs listing (user token) then discovery (installation token). Where the user's GitHub session is live and the App already authorized, the round trip is invisible.
+
+Two consequences are load-bearing: the callback creates a *new* session with `installation_id` NULL, so the installation must survive the trip in `state` and be re-bound on return; and `state` arrives from the browser, so the named installation is accepted only if GitHub's own fresh `GET /user/installations` confirms it for this user.
+
+**Rejected:** persisting the user's OAuth access token so Refresh can list directly — it contradicts Decision 7 and the "stores no token" guarantee. **Deferred:** an anti-CSRF nonce in `state`, which this change does not issue or verify; it must be added as an additional `state` component, not as a replacement for the refresh marker.
+
 ### 9. Application stack is chosen and pinned at apply time
 
 Implement as one web application with a server (holds App credentials, OAuth, GitHub REST, SQL). Do not treat Claude Design, a frontend prototype, or an unpinned “latest” framework as the stack. The first implementation task MUST record exact runtime, web framework, GitHub client, YAML parser, and database versions before product code lands. This design does not name those libraries so it does not invent versions.
