@@ -1,0 +1,19 @@
+/*
+ * Task 8.1 (specs/app-shell/spec.md "Frame every signed-in view in one top
+ * app bar", edge case "the content area scrolls"): the frame every
+ * signed-in view renders inside. `.bar` is `position: sticky` (see
+ * top-app-bar.module.css), so it stays pinned to the top of the viewport
+ * while `.content` scrolls with the page — no fixed-height wrapper, no
+ * scroll listener, nothing measuring the viewport in JavaScript (design.md
+ * Decision 10).
+ */
+.frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+}

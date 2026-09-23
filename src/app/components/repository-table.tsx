@@ -11,7 +11,14 @@
 // In progress / PR/MR column here, and RepositoryTableRow (the only data
 // this component reads) structurally carries no such fields either, so a
 // board column cannot appear even by future accident to this file alone.
+//
+// design-system-and-app-shell task 9.3: restyled through
+// repository-table.module.css — class names only; the element structure,
+// the column set and the exported props are unchanged. Repository names and
+// branch names use the monospace face (specs/design-system/spec.md "Type the
+// interface with one scale and a monospace companion").
 import type { RepositoryTableRow } from "../../server/github/repository-table-view";
+import styles from "./repository-table.module.css";
 
 export const REPOSITORY_TABLE_COLUMNS = ["Repository", "Default branch", "Status", "Reason"] as const;
 
@@ -21,11 +28,11 @@ export interface RepositoryTableProps {
 
 export function RepositoryTable({ rows }: RepositoryTableProps) {
   return (
-    <table>
+    <table className={styles.table}>
       <thead>
         <tr>
           {REPOSITORY_TABLE_COLUMNS.map((column) => (
-            <th key={column} scope="col">
+            <th key={column} scope="col" className={styles.th}>
               {column}
             </th>
           ))}
@@ -33,11 +40,11 @@ export function RepositoryTable({ rows }: RepositoryTableProps) {
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={row.githubRepoId}>
-            <td>{row.fullName}</td>
-            <td>{row.defaultBranch ?? "—"}</td>
-            <td>{row.statusLabel}</td>
-            <td>{row.reason ?? "—"}</td>
+          <tr key={row.githubRepoId} className={styles.row}>
+            <td className={`${styles.td} ${styles.mono}`}>{row.fullName}</td>
+            <td className={`${styles.td} ${styles.mono}`}>{row.defaultBranch ?? "—"}</td>
+            <td className={`${styles.td} ${styles.status}`}>{row.statusLabel}</td>
+            <td className={`${styles.td} ${styles.reason}`}>{row.reason ?? "—"}</td>
           </tr>
         ))}
       </tbody>

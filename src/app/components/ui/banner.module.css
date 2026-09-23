@@ -1,0 +1,64 @@
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.banner svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.neutral {
+  border-left-color: var(--ink3);
+}
+.neutral svg {
+  color: var(--ink3);
+}
+
+.ok {
+  border-left-color: var(--green);
+}
+.ok svg {
+  color: var(--green);
+}
+
+.warn {
+  border-left-color: var(--amber);
+}
+.warn svg {
+  color: var(--amber);
+}
+
+.bad {
+  border-left-color: var(--red);
+}
+.bad svg {
+  color: var(--red);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.content {
+  margin-top: 2px;
+  color: var(--ink2);
+  font-size: 13px;
+}
+
+.action {
+  flex: none;
+}

@@ -1,0 +1,98 @@
+/*
+ * Task 8.1 (specs/app-shell/spec.md "Frame every signed-in view in one top
+ * app bar"): the bar itself. `position: sticky; top: 0;` is what keeps it
+ * visible while the content below scrolls — no JavaScript scroll listener,
+ * no fixed-height wrapper. min-width: 0 on the flexible children is what
+ * keeps a long workspace label or wordmark from forcing the bar to overflow
+ * horizontally (design.md Decision 10: responsiveness is CSS only).
+ */
+.bar {
+  position: sticky;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+  min-height: 56px;
+  padding: 0 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mark {
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-family: var(--fontSans);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.workspace {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.wideOnly {
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * Task 8.6 (specs/app-shell/spec.md "Keep settings and the account reachable
+ * on a narrow viewport"; design.md Decision 10, mobile below 760px). The
+ * search region and the theme/cats slots leave the bar — both preferences
+ * stay changeable in the settings popover — while the mark, the workspace
+ * label (shrinking with an ellipsis), the settings entry and the account
+ * menu stay. Tighter gaps and padding, never overflow: the bar does not
+ * scroll horizontally and no control is overlapped.
+ */
+@media (max-width: 759.98px) {
+  .bar {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .search {
+    display: none;
+  }
+
+  .wideOnly {
+    display: none;
+  }
+
+  .controls {
+    gap: 2px;
+  }
+}

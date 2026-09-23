@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createSqliteDriver } from "./sqlite-driver";
 import { runMigrations } from "./migrate";
 import type { SqlDriver } from "./types";
-import { upsertUser } from "./users";
+import { getUser, upsertUser } from "./users";
 
 const migrationsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "migrations");
 
@@ -42,5 +42,19 @@ describe("upsertUser", () => {
     expect(countUsers()).toBe(1);
     const row = driver.get<{ login: string }>("SELECT login FROM users WHERE github_user_id = ?", [7]);
     expect(row?.login).toBe("octocat-renamed");
+  });
+});
+
+describe("getUser", () => {
+  it("returns the id and login of a stored user", () => {
+    upsertUser(driver, { githubUserId: 7, login: "octocat" });
+
+    expect(getUser(driver, 7)).toEqual({ githubUserId: 7, login: "octocat" });
+  });
+
+  it("returns undefined for a user id that is not stored", () => {
+    upsertUser(driver, { githubUserId: 7, login: "octocat" });
+
+    expect(getUser(driver, 8)).toBeUndefined();
   });
 });

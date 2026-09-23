@@ -20,3 +20,27 @@ export function upsertUser(driver: SqlDriver, { githubUserId, login }: UserUpser
     }
   });
 }
+
+export interface UserSummary {
+  githubUserId: number;
+  login: string;
+}
+
+interface UserSummarySqlRow {
+  github_user_id: number;
+  login: string;
+}
+
+/**
+ * Returns the stored GitHub user id and login, or `undefined` when no row
+ * exists for `githubUserId`.
+ */
+export function getUser(driver: SqlDriver, githubUserId: number): UserSummary | undefined {
+  const row = driver.get<UserSummarySqlRow>(`SELECT github_user_id, login FROM users WHERE github_user_id = ?`, [
+    githubUserId,
+  ]);
+
+  if (!row) return undefined;
+
+  return { githubUserId: row.github_user_id, login: row.login };
+}

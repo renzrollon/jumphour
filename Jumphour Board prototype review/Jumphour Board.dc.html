@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;height:100%;}
+body{font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+*{box-sizing:border-box;}
+a{color:var(--accent);text-decoration:none;}a:hover{color:var(--accent);text-decoration:underline;}
+button,input,select,textarea{font:inherit;color:inherit;}
+button{cursor:pointer;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+[data-jh-theme="light"]{--bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efea;--surface3:#e9e6df;--border:#e2dfd7;--border2:#cfcbc1;--ink:#1c1b18;--ink2:#514e47;--ink3:#77736a;--accent:#4338ca;--accentHover:#3730a3;--accentSoft:#e9e7fb;--accentInk:#ffffff;--green:#1e7a46;--greenSoft:#e3f3e9;--amber:#9a5b00;--amberSoft:#fbefd9;--red:#b3261e;--redSoft:#fbe5e3;--shadow:0 1px 2px rgba(28,27,24,.06),0 4px 14px rgba(28,27,24,.05);--shadowLg:0 12px 40px rgba(28,27,24,.16);--term:#14130f;--termInk:#e8e6df;--gh:#24292f;--ghInk:#ffffff;--gl:#e24329;--glSoft:#fdebe7;--jira:#1d4ed8;--jiraSoft:#e6edfb;--skeleton:linear-gradient(90deg,#efede8 25%,#e5e2da 50%,#efede8 75%);}
+[data-jh-theme="dark"]{--bg:#141412;--surface:#1d1d1a;--surface2:#242421;--surface3:#2c2c28;--border:#2f2f2a;--border2:#43433c;--ink:#ecebe6;--ink2:#b9b7ae;--ink3:#8b8981;--accent:#a5a0f5;--accentHover:#b9b5f8;--accentSoft:#2a2850;--accentInk:#14130f;--green:#5fc78a;--greenSoft:#17301f;--amber:#e0a84a;--amberSoft:#332711;--red:#f08a83;--redSoft:#3a1c1a;--shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);--shadowLg:0 12px 40px rgba(0,0,0,.6);--term:#0d0d0b;--termInk:#e8e6df;--gh:#e6e6e6;--ghInk:#111111;--gl:#fc6d26;--glSoft:#3a2216;--jira:#7ea2f5;--jiraSoft:#1a2540;--skeleton:linear-gradient(90deg,#242421 25%,#2c2c28 50%,#242421 75%);}
+@keyframes jhShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes jhFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes jhSpin{to{transform:rotate(360deg)}}
+@keyframes jhBlink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</helmet>
+<div data-jh-theme="{{ resolvedTheme }}" data-screen-label="Jumphour board" style="display:flex;flex-direction:column;height:100vh;min-height:600px;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;overflow:hidden;">
+
+  <!-- Top app bar -->
+  <header style="display:flex;align-items:center;gap:16px;height:52px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--surface);flex:none;">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+      <span aria-hidden="true" style="width:22px;height:22px;border-radius:6px;background:var(--accent);display:grid;place-items:center;color:var(--accentInk);font-weight:700;font-size:12px;letter-spacing:-.02em;">J</span>
+      <span style="font-weight:600;font-size:15px;letter-spacing:-.01em;">Jumphour</span>
+    </div>
+    <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}">
+    <button aria-label="Switch workspace" style="display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);" style-hover="border-color:var(--border2)">
+      <span style="color:var(--ink3);font-size:12px;">Workspace</span>
+      <span style="font-weight:500;">Platform delivery</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+    </sc-if>
+    <div style="flex:1;display:flex;justify-content:center;min-width:0;">
+      <label style="position:relative;display:flex;align-items:center;width:100%;max-width:440px;">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" style="position:absolute;left:10px;color:var(--ink3);"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.2 9.2L12.5 12.5" stroke="currentColor" stroke-width="1.5"/></svg>
+        <input type="search" aria-label="Search ideas, specs, PRs, and MRs" placeholder="Search ideas, specs, PRs, and MRs" value="{{ query }}" onChange="{{ setQuery }}" style="width:100%;height:32px;padding:0 10px 0 30px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);outline-offset:0;">
+      </label>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex:none;">
+      <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}">
+      <div role="radiogroup" aria-label="Theme" style="display:flex;height:32px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg);">
+        <button role="radio" aria-checked="{{ themeIsSystem }}" aria-label="System theme" title="System" onClick="{{ setThemeSystem }}" style="width:32px;border:0;background:transparent;color:var(--ink2);display:grid;place-items:center;{{ themeBtnSystem }}"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.5" y="2.5" width="11" height="7.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 12.5h5" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        <button role="radio" aria-checked="{{ themeIsLight }}" aria-label="{{ lightLabel }}" title="{{ lightLabel }}" onClick="{{ setThemeLight }}" style="width:32px;border:0;border-left:1px solid var(--border);background:transparent;color:var(--ink2);display:grid;place-items:center;{{ themeBtnLight }}"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 1v1.6M7 11.4V13M1 7h1.6M11.4 7H13M2.8 2.8l1.1 1.1M10.1 10.1l1.1 1.1M2.8 11.2l1.1-1.1M10.1 3.9l1.1-1.1" stroke="currentColor" stroke-width="1.3"/></svg></button>
+        <button role="radio" aria-checked="{{ themeIsDark }}" aria-label="{{ darkLabel }}" title="{{ darkLabel }}" onClick="{{ setThemeDark }}" style="width:32px;border:0;border-left:1px solid var(--border);background:transparent;color:var(--ink2);display:grid;place-items:center;{{ themeBtnDark }}"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9.5 1.8A5.5 5.5 0 1 0 12.2 9 4.3 4.3 0 0 1 9.5 1.8z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+      </div>
+      <button role="switch" aria-checked="{{ cats }}" onClick="{{ toggleCats }}" aria-label="Cats theme" style="display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink2);font-size:13px;">
+        <span style="width:26px;height:16px;border-radius:8px;position:relative;flex:none;{{ catsTrack }}"><span style="position:absolute;top:2px;width:12px;height:12px;border-radius:6px;background:#fff;transition:left .15s;{{ catsKnob }}"></span></span>
+        <span>Cats <span style="color:var(--ink3);">{{ catsLabel }}</span></span>
+      </button>
+      </sc-if>
+      <button aria-label="Settings" title="Settings" onClick="{{ toggleSettings }}" aria-expanded="{{ settingsOpen }}" style="width:32px;height:32px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink2);display:grid;place-items:center;" style-hover="border-color:var(--border2)"><svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 1.5v1.8M7.5 11.7v1.8M1.5 7.5h1.8M11.7 7.5h1.8M3.3 3.3l1.3 1.3M10.4 10.4l1.3 1.3M3.3 11.7l1.3-1.3M10.4 4.6l1.3-1.3" stroke="currentColor" stroke-width="1.4"/></svg></button>
+      <button aria-label="Account menu: Priya Nair" style="width:32px;height:32px;border-radius:16px;border:1px solid var(--border);background:var(--accentSoft);color:var(--accent);font-weight:600;font-size:12px;">PN</button>
+    </div>
+  </header>
+
+  <!-- Board toolbar -->
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--surface);flex:none;flex-wrap:wrap;">
+    <select aria-label="Repository scope" value="{{ repoFilter }}" onChange="{{ setRepoFilter }}" style="height:30px;padding:0 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--ink);font-size:13px;max-width:200px;">
+      <option value="all">All repositories</option>
+      <option value="acme/api-gateway">acme/api-gateway</option>
+      <option value="acme/customer-web">acme/customer-web</option>
+      <option value="acme/mobile-shell">acme/mobile-shell</option>
+    </select>
+    <select aria-label="Source filter" value="{{ sourceFilter }}" onChange="{{ setSourceFilter }}" style="height:30px;padding:0 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--ink);font-size:13px;">
+      <option value="all">All sources</option>
+      <option value="GitHub">GitHub</option>
+      <option value="GitLab">GitLab</option>
+      <option value="Jira">Jira · MCP</option>
+      <option value="Manual">Manual</option>
+    </select>
+    <select aria-label="Owner filter" value="{{ ownerFilter }}" onChange="{{ setOwnerFilter }}" style="height:30px;padding:0 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--ink);font-size:13px;">
+      <option value="all">Any owner</option>
+      <option value="Priya Nair">Priya Nair</option>
+      <option value="Tomasz Wolny">Tomasz Wolny</option>
+      <option value="Dana Okafor">Dana Okafor</option>
+      <option value="Mei Lin">Mei Lin</option>
+      <option value="Unassigned">Unassigned</option>
+    </select>
+    <div style="position:relative;">
+      <button aria-label="How column placement works" aria-expanded="{{ legendOpen }}" onClick="{{ toggleLegend }}" style="width:30px;height:30px;border:1px solid var(--border);border-radius:15px;background:var(--bg);color:var(--ink2);font-weight:600;font-size:12px;font-family:'JetBrains Mono',monospace;">i</button>
+      <sc-if value="{{ legendOpen }}" hint-placeholder-val="{{ false }}">
+      <div role="dialog" aria-label="Derived lifecycle" style="position:absolute;top:36px;left:0;z-index:30;width:340px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .15s ease-out;">
+        <p style="margin:0 0 10px;font-weight:600;">Column placement is calculated from source, OpenSpec, session, and PR/MR evidence.</p>
+        <ol style="margin:0;padding-left:18px;color:var(--ink2);font-size:13px;display:grid;gap:6px;">
+          <li><strong style="color:var(--ink);">Idea</strong> — a captured snapshot from GitHub, GitLab, Jira via MCP, or composed here.</li>
+          <li><strong style="color:var(--ink);">OpenSpec change</strong> — a branch with <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">openspec/changes/…</code> artifacts exists.</li>
+          <li><strong style="color:var(--ink);">In progress</strong> — commits or linked session evidence show implementation work.</li>
+          <li><strong style="color:var(--ink);">PR/MR</strong> — a pull or merge request is open on the host.</li>
+        </ol>
+        <p style="margin:10px 0 0;font-size:12px;color:var(--ink3);">Cards cannot be dragged or set manually. Jumphour never writes to a source.</p>
+      </div>
+      </sc-if>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="position:relative;">
+      <button onClick="{{ toggleLoadMenu }}" aria-expanded="{{ loadMenuOpen }}" aria-haspopup="menu" style="height:30px;padding:0 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--ink);font-size:13px;display:flex;align-items:center;gap:6px;" style-hover="border-color:var(--border2)">Load ideas <svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <sc-if value="{{ loadMenuOpen }}" hint-placeholder-val="{{ false }}">
+      <div role="menu" aria-label="Load ideas from" style="position:absolute;top:36px;right:0;z-index:30;width:280px;padding:6px;border:1px solid var(--border);border-radius:10px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .15s ease-out;">
+        <p style="margin:4px 8px 8px;font-size:12px;color:var(--ink3);">Reads the selected source now and captures snapshots. Never writes back.</p>
+        <button role="menuitem" onClick="{{ loadGitHub }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--gh);"></span>GitHub Issues <span style="margin-left:auto;font-size:12px;color:var(--ink3);">MCP</span></button>
+        <button role="menuitem" onClick="{{ loadGitLab }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--gl);"></span>GitLab issues <span style="margin-left:auto;font-size:12px;color:var(--ink3);">MCP</span></button>
+        <button role="menuitem" onClick="{{ loadJira }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--jira);"></span>Jira <span style="margin-left:auto;font-size:12px;color:var(--ink3);">MCP</span></button>
+        <button role="menuitem" onClick="{{ loadManual }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--ink3);"></span>Manual inbox</button>
+      </div>
+      </sc-if>
+    </div>
+    <button onClick="{{ openCompose }}" style="height:30px;padding:0 12px;border:0;border-radius:7px;background:var(--accent);color:var(--accentInk);font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;" style-hover="background:var(--accentHover)"><span aria-hidden="true" style="font-size:16px;line-height:1;">+</span> Compose idea</button>
+  </div>
+
+  <!-- Source status banner -->
+  <sc-if value="{{ showSourceBanner }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="display:flex;align-items:flex-start;gap:12px;margin:12px 16px 0;padding:10px 14px;border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:10px;background:var(--surface);flex:none;">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="color:var(--amber);flex:none;margin-top:2px;"><path d="M8 1.8L14.6 13.5H1.4z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 6v3.5M8 11.4v.2" stroke="currentColor" stroke-width="1.6"/></svg>
+    <div style="flex:1;min-width:0;">
+      <p style="margin:0;font-weight:600;">{{ bannerTitle }}</p>
+      <p style="margin:2px 0 0;color:var(--ink2);font-size:13px;">{{ bannerBody }}</p>
+      <p style="margin:2px 0 0;color:var(--ink3);font-size:12px;">{{ bannerHint }}</p>
+    </div>
+    <div style="display:flex;gap:6px;flex:none;flex-wrap:wrap;">
+      <button onClick="{{ retrySource }}" style="height:28px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--surface);font-size:13px;font-weight:500;">{{ bannerRetry }}</button>
+      <button onClick="{{ openSources }}" style="height:28px;padding:0 10px;border:0;border-radius:7px;background:transparent;color:var(--accent);font-size:13px;font-weight:500;">View connection details</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- Main -->
+  <div style="display:flex;flex:1;min-height:0;">
+    <!-- Board -->
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;">
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <div role="tablist" aria-label="Board column" style="display:flex;gap:4px;padding:10px 12px 0;overflow-x:auto;flex:none;">
+        <sc-for list="{{ lanes }}" as="lane" hint-placeholder-count="4">
+          <button role="tab" aria-selected="{{ lane.isActiveMobile }}" onClick="{{ lane.selectMobile }}" style="height:34px;padding:0 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px;{{ lane.mobileTabStyle }}">{{ lane.title }} <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3);">{{ lane.count }}</span></button>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ showEmptyBoard }}" hint-placeholder-val="{{ false }}">
+      <section aria-label="Empty board" style="flex:1;display:grid;place-items:center;padding:24px;">
+        <div style="max-width:520px;text-align:center;">
+          <sc-if value="{{ cats }}" hint-placeholder-val="{{ false }}">
+            <svg width="72" height="48" viewBox="0 0 72 48" aria-hidden="true" style="color:var(--ink3);margin-bottom:10px;"><path d="M14 40c-6 0-9-5-7-11 2-5 6-7 6-14l6 6h10l6-6c0 7 4 9 6 14 2 6-1 11-7 11H14z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M38 38h24c5 0 7-4 5-7l-6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="18" cy="28" r="1.2" fill="currentColor"/><circle cx="28" cy="28" r="1.2" fill="currentColor"/></svg>
+          </sc-if>
+          <sc-if value="{{ noCats }}" hint-placeholder-val="{{ true }}">
+            <div aria-hidden="true" style="display:inline-grid;grid-template-columns:repeat(4,44px);gap:6px;margin-bottom:14px;"><span style="height:28px;border:1px dashed var(--border2);border-radius:6px;"></span><span style="height:28px;border:1px dashed var(--border2);border-radius:6px;"></span><span style="height:28px;border:1px dashed var(--border2);border-radius:6px;"></span><span style="height:28px;border:1px dashed var(--border2);border-radius:6px;"></span></div>
+          </sc-if>
+          <h2 style="margin:0 0 6px;font-size:18px;font-weight:600;letter-spacing:-.01em;">No ideas on this board yet</h2>
+          <p style="margin:0 0 18px;color:var(--ink2);text-wrap:pretty;">Load ideas from GitHub Issues, GitLab issues, or Jira via MCP to capture read-only snapshots, or compose one here. Everything downstream is derived from repository and host evidence.</p>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <button onClick="{{ toggleLoadMenuFromEmpty }}" style="height:34px;padding:0 14px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Load ideas</button>
+            <button onClick="{{ openCompose }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;">Compose idea</button>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ showBoard }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;padding:12px 16px 16px;display:flex;gap:12px;align-items:stretch;">
+        <sc-for list="{{ visibleLanes }}" as="lane" hint-placeholder-count="4">
+          <section aria-label="{{ lane.title }}" style="display:flex;flex-direction:column;min-height:0;flex:1 0 272px;max-width:440px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);">
+            <header style="flex:none;padding:12px 12px 10px;border-bottom:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <h2 style="margin:0;font-size:14px;font-weight:600;">{{ lane.title }}</h2>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3);padding:1px 6px;border-radius:6px;background:var(--surface3);">{{ lane.count }}</span>
+                <div style="flex:1;"></div>
+                <sc-if value="{{ lane.hasLoad }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ toggleLoadMenu }}" aria-haspopup="menu" style="height:26px;padding:0 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:500;" style-hover="border-color:var(--border2)">Load ideas</button>
+                </sc-if>
+                <sc-if value="{{ lane.hasFetch }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;">
+                    <button onClick="{{ toggleFetchMenu }}" aria-haspopup="menu" aria-expanded="{{ fetchMenuOpen }}" style="height:26px;padding:0 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:500;" style-hover="border-color:var(--border2)">Fetch PRs/MRs</button>
+                    <sc-if value="{{ fetchMenuOpen }}" hint-placeholder-val="{{ false }}">
+                    <div role="menu" aria-label="Fetch from" style="position:absolute;top:30px;right:0;z-index:30;width:240px;padding:6px;border:1px solid var(--border);border-radius:10px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .15s ease-out;">
+                      <p style="margin:4px 8px 8px;font-size:12px;color:var(--ink3);">Read-only MCP fetch. No comments, reviews, or labels.</p>
+                      <button role="menuitem" onClick="{{ fetchGitHub }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:13px;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--gh);"></span>GitHub pull requests</button>
+                      <button role="menuitem" onClick="{{ fetchGitLab }}" style="display:flex;width:100%;align-items:center;gap:10px;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:13px;" style-hover="background:var(--surface2)"><span style="width:8px;height:8px;border-radius:4px;background:var(--gl);"></span>GitLab merge requests</button>
+                    </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+              <p style="margin:4px 0 0;font-size:12px;color:var(--ink2);">{{ lane.sub }}</p>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--ink3);flex-wrap:wrap;">
+                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 3.4V6l1.8 1.2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+                <span>Listening every 5 min</span>
+                <span aria-hidden="true">·</span>
+                <span style="{{ lane.heardStyle }}">{{ lane.heard }}</span>
+              </div>
+            </header>
+            <div style="flex:1;min-height:0;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;">
+              <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+                <div aria-busy="true" aria-label="{{ lane.loadingLabel }}" style="display:flex;flex-direction:column;gap:8px;">
+                  <p style="margin:0 2px 2px;font-size:12px;color:var(--ink3);">{{ lane.loadingLabel }}</p>
+                  <div style="height:104px;border-radius:10px;background:var(--skeleton);background-size:200% 100%;animation:jhShimmer 1.6s linear infinite;"></div>
+                  <div style="height:104px;border-radius:10px;background:var(--skeleton);background-size:200% 100%;animation:jhShimmer 1.6s linear infinite;"></div>
+                  <div style="height:104px;border-radius:10px;background:var(--skeleton);background-size:200% 100%;animation:jhShimmer 1.6s linear infinite;opacity:.6;"></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ notLoading }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ lane.cards }}" as="card" hint-placeholder-count="3">
+                <article style="border-radius:10px;">
+                  <button onClick="{{ card.select }}" aria-pressed="{{ card.isSelected }}" style="display:block;width:100%;text-align:left;padding:12px 12px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);transition:border-color .12s,box-shadow .12s;{{ card.selStyle }}" style-hover="border-color:var(--border2);box-shadow:0 2px 6px rgba(0,0,0,.08)">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                      <span style="display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;letter-spacing:.01em;{{ card.badgeStyle }}">{{ card.sourceLabel }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace;color:var(--ink2);white-space:nowrap;flex:none;">{{ card.key }}</span>
+                      <span style="margin-left:auto;color:var(--ink3);white-space:nowrap;">{{ card.age }}</span>
+                    </div>
+                    <h3 style="margin:8px 0 6px;font-size:14px;font-weight:600;line-height:1.35;letter-spacing:-.005em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty;">{{ card.title }}</h3>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);flex-wrap:wrap;">
+                      <span style="font-family:'JetBrains Mono',monospace;">{{ card.repo }}</span>
+                      <span style="display:inline-flex;align-items:center;gap:5px;"><span aria-hidden="true" style="width:16px;height:16px;border-radius:8px;display:grid;place-items:center;font-size:9px;font-weight:700;{{ card.avatarStyle }}">{{ card.initials }}</span>{{ card.owner }}</span>
+                      <sc-if value="{{ card.hasRelevance }}" hint-placeholder-val="{{ false }}"><span style="color:var(--ink3);">{{ card.relevance }}</span></sc-if>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--ink2);">
+                      <span aria-hidden="true" style="width:6px;height:6px;border-radius:3px;margin-top:6px;flex:none;{{ card.evidenceDot }}"></span>
+                      <span style="flex:1;min-width:0;">{{ card.evidence }}</span>
+                    </div>
+                    <sc-if value="{{ card.hasAgentNote }}" hint-placeholder-val="{{ false }}">
+                      <p style="margin:6px 0 0;font-size:12px;color:var(--ink3);font-style:italic;">{{ card.agentNote }}</p>
+                    </sc-if>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--ink3);">
+                      <span>{{ card.footer }}</span>
+                      <sc-if value="{{ card.hasLink }}" hint-placeholder-val="{{ true }}">
+                        <span style="display:inline-flex;align-items:center;gap:4px;">{{ card.linkLabel }} <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5h5.5V7M8.5 1.5L2 8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                      </sc-if>
+                    </div>
+                  </button>
+                </article>
+              </sc-for>
+              <sc-if value="{{ lane.isEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:20px 12px;text-align:center;font-size:13px;color:var(--ink3);border:1px dashed var(--border2);border-radius:10px;">
+                  <p style="margin:0 0 8px;">{{ lane.emptyText }}</p>
+                  <sc-if value="{{ lane.showResetFilters }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:6px;justify-content:center;">
+                      <button onClick="{{ resetFilters }}" style="height:28px;padding:0 10px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);font-size:12px;font-weight:500;color:var(--ink);">Reset filters</button>
+                      <sc-if value="{{ lane.hasLoad }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openCompose }}" style="height:28px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:12px;font-weight:500;color:var(--accent);">Compose idea</button></sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ lane.showCat }}" hint-placeholder-val="{{ false }}">
+                    <svg width="44" height="20" viewBox="0 0 44 20" aria-hidden="true" style="margin-top:8px;color:var(--border2);"><path d="M4 17c-2-3 0-9 5-9 2 0 3-3 3-5l3 3h5l3-3c0 2 1 5 3 5 5 0 6 6 4 9H4z" fill="currentColor"/><path d="M30 15c5 0 9 0 12-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </sc-if>
+                </div>
+              </sc-if>
+              </sc-if>
+            </div>
+          </section>
+        </sc-for>
+      </div>
+      </sc-if>
+    </main>
+
+    <!-- Detail panel -->
+    <sc-if value="{{ detailOpen }}" hint-placeholder-val="{{ false }}">
+    <aside aria-label="Detail" data-screen-label="Detail panel" style="flex:none;display:flex;flex-direction:column;min-height:0;background:var(--surface);border-left:1px solid var(--border);animation:jhFade .15s ease-out;{{ panelStyle }}">
+      <div style="flex:none;display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);">
+        <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;{{ sel.badgeStyle }}">{{ sel.sourceLabel }}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink2);white-space:nowrap;flex:none;">{{ sel.key }}</span>
+        <sc-if value="{{ sel.hasLink }}" hint-placeholder-val="{{ true }}">
+          <a href="#" onClick="{{ noop }}" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--accent);">Open in {{ sel.sourceLabel }} <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5h5.5V7M8.5 1.5L2 8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a>
+        </sc-if>
+        <div style="flex:1;"></div>
+        <div style="position:relative;">
+          <button aria-label="More actions" aria-haspopup="menu" aria-expanded="{{ overflowOpen }}" onClick="{{ toggleOverflow }}" style="width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink2);display:grid;place-items:center;"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="3" cy="7" r="1.2" fill="currentColor"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/><circle cx="11" cy="7" r="1.2" fill="currentColor"/></svg></button>
+          <sc-if value="{{ overflowOpen }}" hint-placeholder-val="{{ false }}">
+          <div role="menu" style="position:absolute;top:32px;right:0;z-index:30;width:220px;padding:6px;border:1px solid var(--border);border-radius:10px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .15s ease-out;">
+            <button role="menuitem" onClick="{{ closeMenus }}" style="display:block;width:100%;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:13px;" style-hover="background:var(--surface2)">Copy link</button>
+            <button role="menuitem" onClick="{{ closeMenus }}" style="display:block;width:100%;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:13px;" style-hover="background:var(--surface2)">Open source</button>
+            <button role="menuitem" onClick="{{ hideCard }}" style="display:block;width:100%;padding:8px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:13px;" style-hover="background:var(--surface2)">Hide from board <span style="display:block;font-size:11px;color:var(--ink3);">Local view only. Source is not changed.</span></button>
+          </div>
+          </sc-if>
+        </div>
+        <button aria-label="Close detail" onClick="{{ closeDetail }}" style="width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink2);display:grid;place-items:center;"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      </div>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <h2 style="margin:0 0 4px;font-size:18px;font-weight:600;line-height:1.3;letter-spacing:-.01em;text-wrap:pretty;">{{ sel.title }}</h2>
+          <p style="margin:0;font-size:12px;color:var(--ink3);">{{ sel.snapshotLine }}</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <sc-if value="{{ sel.canSpec }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openLaunch }}" style="height:36px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;display:inline-flex;align-items:center;gap:8px;" style-hover="background:var(--accentHover)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3l4 4-4 4M7 11h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Start spec with Claude Code</button>
+            <button onClick="{{ openPromote }}" style="height:36px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;color:var(--ink2);font-size:13px;" style-hover="border-color:var(--ink3)">Create OpenSpec without agent</button>
+          </sc-if>
+          <sc-if value="{{ sel.canShip }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openLaunch }}" style="height:36px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;display:inline-flex;align-items:center;gap:8px;" style-hover="background:var(--accentHover)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3l4 4-4 4M7 11h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Start ship with Claude Code</button>
+          </sc-if>
+        </div>
+        <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-size:12px;color:var(--ink2);display:flex;gap:8px;align-items:flex-start;">
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="flex:none;margin-top:2px;"><rect x="2.5" y="6" width="9" height="6.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span>{{ sel.readOnlyNote }}</span>
+        </div>
+        <section>
+          <h3 style="margin:0 0 8px;font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Source snapshot</h3>
+          <div style="border:1px dashed var(--border2);border-radius:10px;padding:12px;background:var(--bg);">
+            <p style="margin:0 0 8px;color:var(--ink);text-wrap:pretty;">{{ sel.description }}</p>
+            <p style="margin:0 0 8px;font-size:13px;color:var(--ink2);"><strong style="color:var(--ink);font-weight:600;">Acceptance context.</strong> {{ sel.acceptance }}</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ sel.labels }}" as="lab" hint-placeholder-count="2">
+                <span style="height:20px;padding:0 7px;border-radius:5px;border:1px solid var(--border);font-size:11px;color:var(--ink2);display:inline-flex;align-items:center;">{{ lab }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+        <section style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:13px;">
+          <div><p style="margin:0;font-size:11px;color:var(--ink3);">Repository</p><p style="margin:2px 0 0;font-family:'JetBrains Mono',monospace;font-size:12px;">{{ sel.repo }}</p></div>
+          <div><p style="margin:0;font-size:11px;color:var(--ink3);">Intended owner</p><p style="margin:2px 0 0;">{{ sel.owner }}</p></div>
+          <div><p style="margin:0;font-size:11px;color:var(--ink3);">Related project</p><p style="margin:2px 0 0;">{{ sel.project }}</p></div>
+          <div><p style="margin:0;font-size:11px;color:var(--ink3);">Linked artifacts</p><p style="margin:2px 0 0;font-family:'JetBrains Mono',monospace;font-size:12px;text-wrap:pretty;">{{ sel.linked }}</p></div>
+        </section>
+        <section>
+          <h3 style="margin:0 0 8px;font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Evidence timeline</h3>
+          <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;">
+            <sc-for list="{{ sel.timeline }}" as="ev" hint-placeholder-count="3">
+              <li style="display:grid;grid-template-columns:14px 1fr;gap:10px;padding:0 0 12px;">
+                <span aria-hidden="true" style="display:flex;flex-direction:column;align-items:center;"><span style="width:8px;height:8px;border-radius:4px;margin-top:5px;{{ ev.dot }}"></span><span style="flex:1;width:1px;background:var(--border);margin-top:4px;"></span></span>
+                <div style="font-size:13px;">
+                  <p style="margin:0;color:var(--ink);">{{ ev.text }}</p>
+                  <p style="margin:2px 0 0;font-size:12px;color:var(--ink3);">{{ ev.when }} <sc-if value="{{ ev.hasLink }}" hint-placeholder-val="{{ false }}"><a href="#" onClick="{{ noop }}" style="margin-left:6px;">{{ ev.link }}</a></sc-if></p>
+                </div>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+      </div>
+    </aside>
+    </sc-if>
+
+    <!-- Sources panel -->
+    <sc-if value="{{ sourcesOpen }}" hint-placeholder-val="{{ false }}">
+    <aside aria-label="Source health" data-screen-label="Source health" style="flex:none;display:flex;flex-direction:column;min-height:0;background:var(--surface);border-left:1px solid var(--border);animation:jhFade .15s ease-out;{{ panelStyle }}">
+      <div style="flex:none;display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);">
+        <h2 style="margin:0;font-size:15px;font-weight:600;">Source health</h2>
+        <div style="flex:1;"></div>
+        <button aria-label="Close source health" onClick="{{ closeSources }}" style="width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink2);display:grid;place-items:center;"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <p style="margin:0;font-size:13px;color:var(--ink2);text-wrap:pretty;">Snapshots are read-only projections. A failed listen never changes a card, and a failed session-log read is never implementation failure.</p>
+        <sc-for list="{{ sources }}" as="src" hint-placeholder-count="3">
+          <div style="border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;{{ src.badgeStyle }}">{{ src.label }}</span>
+              <span style="font-size:12px;color:var(--ink3);">{{ src.scope }}</span>
+              <span style="margin-left:auto;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px;{{ src.statusStyle }}"><span aria-hidden="true" style="width:7px;height:7px;border-radius:4px;background:currentColor;"></span>{{ src.status }}</span>
+            </div>
+            <p style="margin:0;font-size:13px;color:var(--ink);">{{ src.line }}</p>
+            <p style="margin:0;font-size:12px;color:var(--ink3);">{{ src.detail }}</p>
+            <sc-if value="{{ src.canRetry }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:6px;margin-top:4px;">
+                <button onClick="{{ retrySource }}" style="height:28px;padding:0 10px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);font-size:12px;font-weight:500;">{{ src.retryLabel }}</button>
+                <button onClick="{{ noop }}" style="height:28px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:12px;font-weight:500;color:var(--accent);">View connection details</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="border:1px solid var(--border);border-radius:10px;padding:12px;">
+          <h3 style="margin:0 0 8px;font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Lane listeners</h3>
+          <sc-for list="{{ lanes }}" as="lane" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:13px;"><span>{{ lane.title }}</span><span style="color:var(--ink2);{{ lane.heardStyle }}">{{ lane.heard }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </aside>
+    </sc-if>
+  </div>
+
+  <!-- Settings popover -->
+  <sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-label="Settings" data-screen-label="Settings" style="position:fixed;top:56px;right:16px;z-index:40;width:320px;max-width:calc(100vw - 32px);padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .15s ease-out;">
+    <h2 style="margin:0 0 10px;font-size:14px;font-weight:600;">Appearance</h2>
+    <div role="radiogroup" aria-label="Appearance" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+      <button role="radio" aria-checked="{{ themeIsSystem }}" onClick="{{ setThemeSystem }}" style="height:32px;border:1px solid var(--border);border-radius:7px;background:var(--bg);font-size:13px;{{ themeBtnSystem }}">System</button>
+      <button role="radio" aria-checked="{{ themeIsLight }}" onClick="{{ setThemeLight }}" style="height:32px;border:1px solid var(--border);border-radius:7px;background:var(--bg);font-size:13px;{{ themeBtnLight }}">{{ lightLabel }}</button>
+      <button role="radio" aria-checked="{{ themeIsDark }}" onClick="{{ setThemeDark }}" style="height:32px;border:1px solid var(--border);border-radius:7px;background:var(--bg);font-size:13px;{{ themeBtnDark }}">{{ darkLabel }}</button>
+    </div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+      <div><p style="margin:0;font-weight:500;">Cats theme</p><p id="cats-desc" style="margin:2px 0 0;font-size:12px;color:var(--ink3);">Adds subtle cat accents without changing the board.</p></div>
+      <button role="switch" aria-checked="{{ cats }}" aria-describedby="cats-desc" aria-label="Cats theme" onClick="{{ toggleCats }}" style="width:36px;height:22px;border-radius:11px;border:0;position:relative;flex:none;{{ catsTrack }}"><span style="position:absolute;top:3px;width:16px;height:16px;border-radius:8px;background:#fff;transition:left .15s;{{ catsKnobLg }}"></span></button>
+    </div>
+    <h2 style="margin:14px 0 8px;padding-top:12px;border-top:1px solid var(--border);font-size:14px;font-weight:600;">Source connections</h2>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <sc-for list="{{ sources }}" as="src" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;{{ src.badgeStyle }}">{{ src.label }}</span><span style="margin-left:auto;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:5px;{{ src.statusStyle }}"><span aria-hidden="true" style="width:7px;height:7px;border-radius:4px;background:currentColor;"></span>{{ src.status }}</span></div>
+      </sc-for>
+    </div>
+    <button onClick="{{ openSources }}" style="margin-top:10px;height:30px;width:100%;border:1px solid var(--border2);border-radius:7px;background:var(--surface);font-size:13px;font-weight:500;">Open source health</button>
+  </div>
+  </sc-if>
+
+  <!-- Compose dialog -->
+  <sc-if value="{{ composeOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:50;background:rgba(20,19,15,.45);display:grid;place-items:center;padding:16px;" onClick="{{ overlayClick }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="compose-title" data-screen-label="Compose idea" onClick="{{ stop }}" style="width:100%;max-width:560px;max-height:100%;overflow-y:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .18s ease-out;">
+      <div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);">
+        <h2 id="compose-title" style="margin:0;font-size:16px;font-weight:600;">Compose idea</h2>
+        <p style="margin:4px 0 0;font-size:13px;color:var(--ink2);">Capture a decision-worthy idea. Promotion will create an OpenSpec change; it will not start implementation.</p>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+        <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Title <span style="color:var(--red);">*</span></span>
+          <input autoFocus="{{ true }}" value="{{ form.title }}" onChange="{{ setFormTitle }}" aria-invalid="{{ form.titleInvalid }}" aria-describedby="title-err" placeholder="Compare hosted runners against the overnight queue" style="width:100%;height:34px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);{{ form.titleStyle }}">
+          <sc-if value="{{ form.titleInvalid }}" hint-placeholder-val="{{ false }}"><span id="title-err" role="alert" style="display:block;margin-top:4px;font-size:12px;color:var(--red);">Add a title so the idea is recognizable on the board.</span></sc-if>
+        </label>
+        <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Problem / opportunity</span>
+          <textarea value="{{ form.problem }}" onChange="{{ setFormProblem }}" rows="3" placeholder="What is hard or slow today, and for whom?" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);resize:vertical;"></textarea>
+        </label>
+        <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Context and constraints</span>
+          <textarea value="{{ form.context }}" onChange="{{ setFormContext }}" rows="2" placeholder="Related services, deadlines, non-goals" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);resize:vertical;"></textarea>
+        </label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+          <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Repository <span style="color:var(--red);">*</span></span>
+            <select value="{{ form.repo }}" onChange="{{ setFormRepo }}" aria-invalid="{{ form.repoInvalid }}" style="width:100%;height:34px;padding:0 8px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);{{ form.repoStyle }}">
+              <option value="">Select a repository</option>
+              <option value="acme/api-gateway">acme/api-gateway</option>
+              <option value="acme/customer-web">acme/customer-web</option>
+              <option value="acme/mobile-shell">acme/mobile-shell</option>
+            </select>
+            <sc-if value="{{ form.repoInvalid }}" hint-placeholder-val="{{ false }}"><span role="alert" style="display:block;margin-top:4px;font-size:12px;color:var(--red);">Choose the repository this idea belongs to.</span></sc-if>
+          </label>
+          <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Suggested owner <span style="color:var(--ink3);font-weight:400;">optional</span></span>
+            <select value="{{ form.owner }}" onChange="{{ setFormOwner }}" style="width:100%;height:34px;padding:0 8px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);">
+              <option value="Unassigned">Unassigned</option>
+              <option value="Priya Nair">Priya Nair</option>
+              <option value="Tomasz Wolny">Tomasz Wolny</option>
+              <option value="Dana Okafor">Dana Okafor</option>
+              <option value="Mei Lin">Mei Lin</option>
+            </select>
+          </label>
+        </div>
+        <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Supporting links <span style="color:var(--ink3);font-weight:400;">optional</span></span>
+          <input value="{{ form.links }}" onChange="{{ setFormLinks }}" placeholder="https://…  (one per line or comma-separated)" style="width:100%;height:34px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;">
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--border);">
+        <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;background:var(--surface3);color:var(--ink2);">Manual</span>
+        <span style="font-size:12px;color:var(--ink3);">Created in Jumphour</span>
+        <div style="flex:1;"></div>
+        <button onClick="{{ closeCompose }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Cancel</button>
+        <button onClick="{{ submitCompose }}" disabled="{{ form.submitting }}" aria-busy="{{ form.submitting }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;display:inline-flex;align-items:center;gap:8px;{{ form.submitStyle }}">
+          <sc-if value="{{ form.submitting }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:6px;animation:jhSpin .7s linear infinite;"></span></sc-if>
+          {{ form.submitLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- Claude Code launch sheet -->
+  <sc-if value="{{ launchOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:50;background:rgba(20,19,15,.45);display:flex;justify-content:flex-end;" onClick="{{ overlayClick }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="launch-title" data-screen-label="Claude Code session" onClick="{{ stop }}" style="display:flex;flex-direction:column;height:100%;background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadowLg);animation:jhFade .18s ease-out;{{ sheetStyle }}">
+      <div style="flex:none;display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div style="min-width:0;">
+          <h2 id="launch-title" style="margin:0;font-size:16px;font-weight:600;">{{ launch.title }}</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--ink3);">Attended session · bound to one card and one repository</p>
+        </div>
+        <div style="flex:1;"></div>
+        <button aria-label="Close" onClick="{{ closeLaunch }}" style="width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink2);display:grid;place-items:center;"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      </div>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <div style="border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface2);display:flex;gap:10px;align-items:flex-start;">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;flex:none;{{ sel.badgeStyle }}">{{ sel.sourceLabel }}</span>
+          <div style="min-width:0;">
+            <p style="margin:0;font-weight:600;line-height:1.35;">{{ sel.title }}</p>
+            <p style="margin:2px 0 0;font-size:12px;color:var(--ink3);"><span style="font-family:'JetBrains Mono',monospace;">{{ sel.key }}</span> · {{ sel.snapshotLine }}</p>
+          </div>
+        </div>
+        <sc-if value="{{ launch.isConfig }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:130px 1fr;gap:10px 12px;font-size:13px;align-items:center;">
+          <span style="color:var(--ink3);">Repository</span>
+          <select value="{{ launch.repo }}" onChange="{{ setLaunchRepo }}" aria-label="Repository" style="height:32px;padding:0 8px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;">
+            <option value="acme/api-gateway">acme/api-gateway</option>
+            <option value="acme/customer-web">acme/customer-web</option>
+            <option value="acme/mobile-shell">acme/mobile-shell</option>
+          </select>
+          <sc-if value="{{ launch.hasChangePath }}" hint-placeholder-val="{{ false }}">
+            <span style="color:var(--ink3);">OpenSpec change</span>
+            <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ launch.changePath }}</code>
+          </sc-if>
+          <span style="color:var(--ink3);">Working directory</span>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ launch.cwd }}</code>
+          <span style="color:var(--ink3);">Command</span>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 10px;border-radius:6px;background:var(--term);color:var(--termInk);justify-self:start;">$ {{ launch.command }}</code>
+        </div>
+        <section>
+          <h3 style="margin:0 0 8px;font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Preflight</h3>
+          <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;">
+            <sc-for list="{{ launch.checks }}" as="chk" hint-placeholder-count="5">
+              <li style="display:flex;align-items:flex-start;gap:8px;font-size:13px;">
+                <span aria-hidden="true" style="width:16px;height:16px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:10px;font-weight:700;{{ chk.style }}">{{ chk.glyph }}</span>
+                <span style="flex:1;"><span style="color:var(--ink);">{{ chk.label }}</span> <span style="color:var(--ink3);">· {{ chk.status }}</span></span>
+              </li>
+            </sc-for>
+          </ul>
+        </section>
+        <sc-if value="{{ launch.hasError }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="border:1px solid var(--border);border-left:3px solid var(--red);border-radius:10px;padding:12px 14px;background:var(--surface);">
+            <p style="margin:0;font-weight:600;">{{ launch.errTitle }}</p>
+            <p style="margin:4px 0 0;font-size:13px;color:var(--ink2);text-wrap:pretty;">{{ launch.errBody }}</p>
+            <sc-if value="{{ launch.showMismatch }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin-top:8px;font-size:12px;font-family:'JetBrains Mono',monospace;"><span style="color:var(--ink3);font-family:'Instrument Sans',sans-serif;">Selected</span><span>{{ launch.repo }}</span><span style="color:var(--ink3);font-family:'Instrument Sans',sans-serif;">CLI directory</span><span>~/src/acme/customer-web</span></div>
+            </sc-if>
+            <sc-if value="{{ launch.showActive }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-size:12px;"><span style="font-weight:600;">Active session</span> · MOB-77 Offline queue for shell telemetry · <span style="font-family:'JetBrains Mono',monospace;">acme/mobile-shell</span> · <span style="font-family:'JetBrains Mono',monospace;">interlock:ship</span></div>
+            </sc-if>
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+              <sc-if value="{{ launch.showActive }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openActiveSession }}" style="height:30px;padding:0 10px;border:0;border-radius:7px;background:var(--accent);color:var(--accentInk);font-size:13px;font-weight:600;">Open active session</button></sc-if>
+              <sc-if value="{{ launch.showMismatch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ resetLaunch }}" style="height:30px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--surface);font-size:13px;font-weight:500;">Return to repository selection</button></sc-if>
+              <sc-if value="{{ launch.showRetry }}" hint-placeholder-val="{{ false }}"><button onClick="{{ resetLaunch }}" style="height:30px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--surface);font-size:13px;font-weight:500;">Try again</button></sc-if>
+              <button onClick="{{ closeLaunch }}" style="height:30px;padding:0 10px;border:0;border-radius:7px;background:transparent;font-size:13px;font-weight:500;color:var(--ink2);">Back to board</button>
+            </div>
+          </div>
+        </sc-if>
+        </sc-if>
+        <sc-if value="{{ launch.isRunning }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);">
+            <span style="font-family:'JetBrains Mono',monospace;">{{ launch.repo }}</span><span aria-hidden="true">·</span><span style="font-family:'JetBrains Mono',monospace;">{{ launch.cwd }}</span>
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;color:var(--green);font-weight:600;"><span aria-hidden="true" style="width:7px;height:7px;border-radius:4px;background:currentColor;"></span>Session active</span>
+          </div>
+          <div role="log" aria-label="Claude Code CLI" style="flex:1;min-height:320px;border-radius:10px;background:var(--term);color:var(--termInk);padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap;overflow-y:auto;">{{ launch.terminal }}<span aria-hidden="true" style="display:inline-block;width:8px;height:14px;background:var(--termInk);vertical-align:-2px;animation:jhBlink 1s steps(1) infinite;"></span></div>
+          <p style="margin:0;font-size:12px;color:var(--ink3);text-wrap:pretty;">You stay in this CLI. Interlock governs what <span style="font-family:'JetBrains Mono',monospace;">{{ launch.command }}</span> does. The board updates only from repository, host, and linked session evidence.</p>
+        </sc-if>
+      </div>
+      <div style="flex:none;display:flex;align-items:center;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--border);">
+        <sc-if value="{{ launch.isConfig }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:12px;color:var(--ink3);">One embedded session per workspace.</p>
+          <div style="flex:1;"></div>
+          <button onClick="{{ closeLaunch }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Cancel</button>
+          <button onClick="{{ runLaunch }}" disabled="{{ launch.primaryDisabled }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;display:inline-flex;align-items:center;gap:8px;{{ launch.primaryStyle }}">
+            <sc-if value="{{ launch.checking }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:6px;animation:jhSpin .7s linear infinite;"></span></sc-if>
+            {{ launch.primaryLabel }}
+          </button>
+        </sc-if>
+        <sc-if value="{{ launch.isRunning }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:12px;color:var(--ink3);">Exit the CLI to end this session. The card keeps its evidence-derived column.</p>
+          <div style="flex:1;"></div>
+          <button onClick="{{ closeLaunch }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Exit session</button>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- Promote to OpenSpec -->
+  <sc-if value="{{ promoteOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:50;background:rgba(20,19,15,.45);display:grid;place-items:center;padding:16px;" onClick="{{ overlayClick }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="promote-title" data-screen-label="Promote to OpenSpec" onClick="{{ stop }}" style="width:100%;max-width:600px;max-height:100%;overflow-y:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadowLg);animation:jhFade .18s ease-out;">
+      <div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;">
+        <div style="min-width:0;">
+          <h2 id="promote-title" style="margin:0;font-size:16px;font-weight:600;">Create OpenSpec change without agent</h2>
+          <p style="margin:4px 0 0;font-size:13px;color:var(--ink2);">{{ promote.stepLabel }}</p>
+        </div>
+        <div style="flex:1;"></div>
+        <button aria-label="Close" onClick="{{ closePromote }}" style="width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink2);display:grid;place-items:center;flex:none;"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px dashed var(--border2);border-radius:8px;background:var(--bg);font-size:13px;">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-weight:600;font-size:11px;white-space:nowrap;flex:none;flex:none;{{ sel.badgeStyle }}">{{ sel.sourceLabel }}</span>
+          <span style="min-width:0;"><span style="font-weight:600;">{{ sel.title }}</span> <span style="color:var(--ink3);">· snapshot {{ sel.snapshotShort }}</span></span>
+        </div>
+
+        <sc-if value="{{ promote.isConfigure }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+            <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Repository</span>
+              <select value="{{ promote.repo }}" onChange="{{ setPromoteRepo }}" style="width:100%;height:34px;padding:0 8px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;">
+                <option value="acme/api-gateway">acme/api-gateway</option>
+                <option value="acme/customer-web">acme/customer-web</option>
+                <option value="acme/mobile-shell">acme/mobile-shell</option>
+              </select>
+            </label>
+            <label style="display:block;"><span style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">Change name</span>
+              <input value="{{ promote.name }}" onChange="{{ setPromoteName }}" aria-describedby="name-hint" style="width:100%;height:34px;padding:0 10px;border:1px solid var(--border2);border-radius:7px;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;">
+              <span id="name-hint" style="display:block;margin-top:4px;font-size:12px;color:var(--ink3);">Lowercase, hyphen-separated, verb first.</span>
+            </label>
+          </div>
+          <div style="font-size:13px;"><span style="display:block;font-weight:500;margin-bottom:4px;">Target branch</span><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ promote.branch }}</code></div>
+          <div style="font-size:13px;"><span style="display:block;font-weight:500;margin-bottom:4px;">Files to create</span>
+            <ul style="margin:0;padding:8px 10px;list-style:none;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;flex-direction:column;gap:3px;color:var(--ink2);">
+              <li>{{ promote.pathProposal }}</li><li>{{ promote.pathTasks }}</li><li>{{ promote.pathSpecs }}</li>
+            </ul>
+          </div>
+          <p style="margin:0;font-size:12px;color:var(--ink3);">This creates files on a GitHub branch and opens a pull request. It does not update the original issue.</p>
+        </sc-if>
+
+        <sc-if value="{{ promote.isProgress }}" hint-placeholder-val="{{ false }}">
+          <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;" aria-live="polite">
+            <sc-for list="{{ promote.steps }}" as="st" hint-placeholder-count="4">
+              <li style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                <span aria-hidden="true" style="width:18px;height:18px;border-radius:9px;display:grid;place-items:center;font-size:10px;font-weight:700;flex:none;{{ st.style }}">{{ st.glyph }}</span>
+                <span style="{{ st.textStyle }}">{{ st.label }}</span>
+                <span style="margin-left:auto;font-size:12px;color:var(--ink3);">{{ st.status }}</span>
+              </li>
+            </sc-for>
+          </ol>
+          <p style="margin:0;font-size:12px;color:var(--ink3);">You can close this dialog. Progress continues and the board will reflect the result from repository evidence.</p>
+        </sc-if>
+
+        <sc-if value="{{ promote.isSuccess }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <p style="margin:0;font-weight:600;">OpenSpec change created</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;"><span style="color:var(--ink3);">Branch</span><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ promote.branch }}</code><span style="color:var(--ink3);">Pull request</span><span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;">#491</span> Add OpenSpec change: {{ promote.name }} <a href="#" onClick="{{ noop }}" style="margin-left:4px;font-size:12px;">Open on GitHub ↗</a></span><span style="color:var(--ink3);">Artifacts</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;flex-direction:column;gap:2px;"><a href="#" onClick="{{ noop }}">proposal.md</a><a href="#" onClick="{{ noop }}">tasks.md</a><a href="#" onClick="{{ noop }}">specs/</a></span></div>
+            <p style="margin:0;color:var(--ink2);">Derived placement: <strong style="color:var(--ink);">OpenSpec change</strong>. The original issue was not modified.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ promote.isError }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="border:1px solid var(--border);border-left:3px solid var(--red);border-radius:10px;padding:12px 14px;font-size:13px;">
+            <p style="margin:0;font-weight:600;">Could not create the branch</p>
+            <p style="margin:4px 0 0;color:var(--ink2);text-wrap:pretty;">We could not create <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ promote.branch }}</code> because a branch with that name already exists. The original issue has not changed.</p>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--border);flex-wrap:wrap;">
+        <sc-if value="{{ promote.isConfigure }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;"></div>
+          <button onClick="{{ closePromote }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Back</button>
+          <button onClick="{{ startPromote }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;">Create OpenSpec change</button>
+        </sc-if>
+        <sc-if value="{{ promote.isProgress }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;"></div>
+          <button onClick="{{ closePromote }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Close</button>
+        </sc-if>
+        <sc-if value="{{ promote.isSuccess }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;"></div>
+          <button onClick="{{ closePromote }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Return to board</button>
+          <button onClick="{{ viewChange }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;">View OpenSpec change</button>
+        </sc-if>
+        <sc-if value="{{ promote.isError }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;"></div>
+          <button onClick="{{ promoteChooseName }}" style="height:34px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-weight:500;">Choose a different name</button>
+          <button onClick="{{ startPromote }}" style="height:34px;padding:0 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accentInk);font-weight:600;">Try again</button>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;boardState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;populated&quot;,&quot;options&quot;:[&quot;populated&quot;,&quot;loading&quot;,&quot;empty&quot;,&quot;filtered-empty&quot;,&quot;source-error&quot;,&quot;jira-failed&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Board scenario&quot;},&quot;launchOutcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;success&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;unavailable&quot;,&quot;no-interlock&quot;,&quot;mismatch&quot;,&quot;active-session&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Claude Code launch&quot;},&quot;promoteOutcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;success&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;branch-exists&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Promote to OpenSpec&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;system&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;cats&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Appearance&quot;}}">
+const REPO_DIR = { 'acme/api-gateway': '~/src/acme/api-gateway', 'acme/customer-web': '~/src/acme/customer-web', 'acme/mobile-shell': '~/src/acme/mobile-shell' };
+const OWNER_COLORS = { 'Priya Nair': 'background:#e9e7fb;color:#4338ca', 'Tomasz Wolny': 'background:#e3f3e9;color:#1e7a46', 'Dana Okafor': 'background:#fbefd9;color:#9a5b00', 'Mei Lin': 'background:#e6edfb;color:#1d4ed8', 'Unassigned': 'background:var(--surface3);color:var(--ink3)' };
+const BADGE = {
+  GitHub: 'background:var(--gh);color:var(--ghInk)',
+  GitLab: 'background:var(--glSoft);color:var(--gl)',
+  Jira: 'background:var(--jiraSoft);color:var(--jira)',
+  Manual: 'background:var(--surface3);color:var(--ink2)',
+};
+const SRC_LABEL = { GitHub: 'GitHub', GitLab: 'GitLab', Jira: 'Jira · MCP', Manual: 'Manual' };
+const DOT = { neutral: 'background:var(--ink3)', ok: 'background:var(--green)', warn: 'background:var(--amber)', bad: 'background:var(--red)', accent: 'background:var(--accent)' };
+
+const CARDS = [
+  { id: 'c1', lane: 'idea', source: 'GitHub', key: '#814', title: 'Support request-level idempotency keys', repo: 'acme/api-gateway', owner: 'Priya Nair', relevance: 'Platform reliability', age: 'Snapshot 14 min ago', evidence: 'Captured from GitHub #814', dot: 'neutral', footer: 'Opened Sep 9 · updated Sep 14', link: 'github.com', description: 'Retried POST /payments calls can create duplicate charges when clients time out. Merchants have asked for an Idempotency-Key header honoured at the gateway for 24 hours.', acceptance: 'Duplicate requests with the same key return the original response; keys expire after 24h; conflicts return 409.', labels: ['area:gateway', 'reliability', 'customer-ask'], project: 'Platform reliability Q3', linked: 'None yet', timeline: [ { text: 'Snapshot captured from GitHub #814', when: '14 min ago', dot: 'neutral', link: 'Open issue' }, { text: 'Idea lane · listening every 5 min · last heard 2 min ago', when: 'Read-only projection', dot: 'ok' }, { text: 'No OpenSpec artifacts or session evidence for this idea', when: 'Eligible for interlock:spec', dot: 'neutral' } ] },
+  { id: 'c2', lane: 'idea', source: 'Jira', key: 'PAY-184', title: 'Give finance export failures an actionable retry path', repo: 'acme/customer-web', owner: 'Unassigned', relevance: 'Finance ops', age: 'Snapshot 41 min ago', evidence: 'Captured from Jira PAY-184 via MCP', dot: 'neutral', footer: 'Created Sep 3 · updated Sep 12', link: 'Jira', description: 'Finance users see "Export failed" with no way to retry. They re-run the whole month and email support. Retry should be one action from the failure row.', acceptance: 'Failure row shows cause and a Retry action; retried exports are attributed to the original request.', labels: ['Payments', 'finance', 'ux-debt'], project: 'Payments', linked: 'None yet', timeline: [ { text: 'Snapshot captured from Jira PAY-184 via MCP', when: '41 min ago', dot: 'neutral', link: 'Open in Jira' }, { text: 'Idea lane · listening every 5 min · last heard 2 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c3', lane: 'idea', source: 'GitLab', key: '#227', title: 'Expose tenant-level webhook delivery metrics', repo: 'acme/api-gateway', owner: 'Tomasz Wolny', relevance: '', age: 'Snapshot 1 h ago', evidence: 'Captured from GitLab #227', dot: 'neutral', footer: 'Opened Aug 28 · updated Sep 11', link: 'gitlab.com', description: 'Tenants cannot see whether their webhooks are being delivered or retried. Support asks for per-tenant success rate and latency over 24h.', acceptance: 'Metrics endpoint scoped to tenant; p50/p95 latency and delivery success rate.', labels: ['webhooks', 'observability'], project: 'Tenant platform', linked: 'None yet', timeline: [ { text: 'Snapshot captured from GitLab #227', when: '1 h ago', dot: 'neutral', link: 'Open issue' }, { text: 'Idea lane · listening every 5 min · last heard 2 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c4', lane: 'idea', source: 'Manual', key: '', title: 'Compare hosted runners against the overnight queue', repo: 'acme/mobile-shell', owner: 'Dana Okafor', relevance: 'CI cost', age: 'Composed 2 d ago', evidence: 'Created in Jumphour', dot: 'neutral', footer: 'Composed Sep 13', link: '', agentNote: 'Drafted with agent assistance', description: 'Overnight builds queue for up to 40 min on self-hosted runners. Hosted macOS runners may clear the queue faster at a predictable cost.', acceptance: 'Two-week comparison of queue time and cost per build; recommendation with a rollback path.', labels: ['ci', 'cost'], project: 'Mobile delivery', linked: 'None yet', timeline: [ { text: 'Composed in Jumphour by Dana Okafor', when: 'Sep 13', dot: 'neutral' }, { text: 'Problem statement drafted with agent assistance', when: 'Sep 13', dot: 'accent' }, { text: 'Idea lane · listening every 5 min · last heard 2 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c5', lane: 'change', source: 'GitHub', key: '#806', title: 'Add idempotency keys to payment intents', repo: 'acme/api-gateway', owner: 'Priya Nair', relevance: '', age: 'Snapshot 9 min ago', evidence: 'Change: add-idempotency-keys · Claude Code · proposal drafting · observed 11 min ago', dot: 'accent', footer: 'Branch spec/add-idempotency-keys', link: 'github.com', changeName: 'add-idempotency-keys', description: 'Payment intent creation must accept an Idempotency-Key and replay the stored response for 24 hours.', acceptance: 'proposal.md and tasks.md reviewed; spec covers replay, expiry, and conflict handling.', labels: ['area:gateway', 'openspec'], project: 'Platform reliability Q3', linked: 'openspec/changes/add-idempotency-keys/', timeline: [ { text: 'Branch spec/add-idempotency-keys observed with openspec/changes/add-idempotency-keys/proposal.md', when: '26 min ago', dot: 'ok', link: 'View branch' }, { text: 'Claude Code · proposal drafting · observed 11 min ago', when: 'Linked to branch spec/add-idempotency-keys', dot: 'accent', link: 'Evidence' }, { text: 'OpenSpec change lane · listening every 5 min · last heard 4 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c6', lane: 'change', source: 'Jira', key: 'PAY-201', title: 'Rate-limit bulk invoice regeneration', repo: 'acme/customer-web', owner: 'Mei Lin', relevance: '', age: 'Snapshot 41 min ago', evidence: 'Change: rate-limit-invoice-regeneration · Needs attention · session not linked', dot: 'warn', footer: 'Branch spec/rate-limit-invoice-regeneration', link: 'Jira', changeName: 'rate-limit-invoice-regeneration', description: 'Bulk regeneration jobs starve interactive traffic. Cap concurrent regenerations per tenant.', acceptance: 'Configurable cap; excess jobs queued with visible position.', labels: ['Payments', 'performance'], project: 'Payments', linked: 'openspec/changes/rate-limit-invoice-regeneration/', timeline: [ { text: 'Branch spec/rate-limit-invoice-regeneration observed with OpenSpec artifacts', when: '3 h ago', dot: 'ok', link: 'View branch' }, { text: 'Needs attention · a Cursor session referenced this change but is not securely linked to the branch', when: 'Session evidence unavailable', dot: 'warn' }, { text: 'OpenSpec change lane · listening every 5 min · last heard 4 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c7', lane: 'change', source: 'Manual', key: '', title: 'Consolidate feature flag SDK initialization', repo: 'acme/mobile-shell', owner: 'Dana Okafor', relevance: '', age: 'Composed 5 d ago', evidence: 'Change: consolidate-flag-init · Interlock artifact · proposal.md, tasks.md · observed 2 h ago', dot: 'ok', footer: 'Branch spec/consolidate-flag-init', link: '', changeName: 'consolidate-flag-init', description: 'Three flag SDK bootstraps run at app start. Collapse to one initialization with a shared cache.', acceptance: 'Single init path; cold start unchanged or faster.', labels: ['mobile', 'tech-debt'], project: 'Mobile delivery', linked: 'openspec/changes/consolidate-flag-init/ · PR #488 (draft)', timeline: [ { text: 'Draft PR #488 opened by Promote to OpenSpec', when: '2 d ago', dot: 'ok', link: 'Open PR' }, { text: 'Interlock artifact · proposal.md, tasks.md · observed 2 h ago', when: 'Linked to branch spec/consolidate-flag-init', dot: 'ok' }, { text: 'OpenSpec change lane · listening every 5 min · last heard 4 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c8', lane: 'progress', source: 'GitHub', key: '#802', title: 'Stream audit log exports instead of buffering', repo: 'acme/api-gateway', owner: 'Tomasz Wolny', relevance: '', age: 'Snapshot 12 min ago', evidence: 'Cursor session · implementation file activity · observed 3 min ago', dot: 'accent', footer: 'Branch feat/stream-audit-exports · 6 commits', link: 'github.com', description: 'Large audit exports exhaust memory. Stream rows to the response instead of buffering the full file.', acceptance: 'Exports over 1 GB complete without OOM; memory flat.', labels: ['audit', 'performance'], project: 'Platform reliability Q3', linked: 'openspec/changes/stream-audit-exports/ · feat/stream-audit-exports', timeline: [ { text: '6 commits on feat/stream-audit-exports', when: 'Latest 18 min ago', dot: 'ok', link: 'View commits' }, { text: 'Cursor session · implementation file activity · observed 3 min ago', when: 'Linked to branch feat/stream-audit-exports', dot: 'accent', link: 'Evidence' }, { text: 'In progress lane · listening every 5 min · last heard 1 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c9', lane: 'progress', source: 'Jira', key: 'MOB-77', title: 'Offline queue for shell telemetry', repo: 'acme/mobile-shell', owner: 'Mei Lin', relevance: '', age: 'Snapshot 41 min ago', evidence: 'Claude Code · interlock:ship launched in acme/mobile-shell · session active', dot: 'accent', footer: 'Branch feat/offline-telemetry-queue', link: 'Jira', description: 'Telemetry drops when the device is offline. Queue events locally and flush on reconnect.', acceptance: 'No event loss across a 24h offline window; bounded queue size.', labels: ['mobile', 'telemetry'], project: 'Mobile delivery', linked: 'openspec/changes/offline-telemetry-queue/', timeline: [ { text: 'Claude Code · interlock:ship launched from Jumphour in acme/mobile-shell', when: 'Session active · started 22 min ago', dot: 'accent', link: 'Evidence' }, { text: '2 commits on feat/offline-telemetry-queue', when: 'Latest 9 min ago', dot: 'ok' }, { text: 'In progress lane · listening every 5 min · last heard 1 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c10', lane: 'progress', source: 'GitLab', key: '#219', title: 'Per-tenant rate limit headers', repo: 'acme/api-gateway', owner: 'Unassigned', relevance: '', age: 'Snapshot 1 h ago', evidence: 'No session evidence observed yet · 3 commits on feat/tenant-rate-headers', dot: 'neutral', footer: 'Branch feat/tenant-rate-headers', link: 'gitlab.com', description: 'Return X-RateLimit-* headers scoped per tenant so clients can back off.', acceptance: 'Headers on every 2xx and 429; documented in API reference.', labels: ['api', 'tenant'], project: 'Tenant platform', linked: 'openspec/changes/tenant-rate-headers/', timeline: [ { text: '3 commits on feat/tenant-rate-headers', when: 'Latest 2 h ago', dot: 'ok', link: 'View commits' }, { text: 'No session evidence observed yet', when: 'Placement derived from repository commits only', dot: 'neutral' }, { text: 'In progress lane · listening every 5 min · last heard 1 min ago', when: 'Read-only projection', dot: 'ok' } ] },
+  { id: 'c11', lane: 'pr', source: 'GitHub', key: 'PR #482', title: 'Add retryable finance exports', repo: 'acme/customer-web', owner: 'Mei Lin', relevance: '', age: 'Fetched 14 min ago', evidence: 'GitHub PR #482 · review requested', dot: 'ok', footer: 'Opened Sep 12 · 2 reviewers', link: 'github.com', description: 'Adds a Retry action to failed finance export rows and attributes retries to the original request.', acceptance: 'Two approvals required; CI green.', labels: ['finance', 'ready-for-review'], project: 'Payments', linked: 'openspec/changes/retryable-finance-exports/ · PR #482', timeline: [ { text: 'GitHub PR #482 · review requested from Priya Nair, Tomasz Wolny', when: 'Fetched 14 min ago', dot: 'ok', link: 'Open PR' }, { text: 'PR/MR lane · listening every 5 min · last successful listen 14 min ago', when: 'Read-only MCP fetch', dot: 'warn' } ] },
+  { id: 'c12', lane: 'pr', source: 'GitLab', key: 'MR !91', title: 'Add tenant delivery metrics', repo: 'acme/api-gateway', owner: 'Tomasz Wolny', relevance: '', age: 'Fetched 14 min ago', evidence: 'GitLab MR !91 · ready for review', dot: 'ok', footer: 'Opened Sep 11 · pipeline passed', link: 'gitlab.com', description: 'Exposes per-tenant webhook delivery success rate and latency over a rolling 24h window.', acceptance: 'Pipeline passed; docs updated.', labels: ['webhooks', 'observability'], project: 'Tenant platform', linked: 'openspec/changes/tenant-delivery-metrics/ · MR !91', timeline: [ { text: 'GitLab MR !91 · ready for review', when: 'Fetched 14 min ago', dot: 'ok', link: 'Open MR' }, { text: 'PR/MR lane · listening every 5 min · last successful listen 14 min ago', when: 'Read-only MCP fetch', dot: 'warn' } ] },
+  { id: 'c13', lane: 'pr', source: 'GitHub', key: 'PR #476', title: 'Harden shell deep-link parsing', repo: 'acme/mobile-shell', owner: 'Dana Okafor', relevance: '', age: 'Fetched 14 min ago', evidence: 'GitHub PR #476 · changes requested', dot: 'warn', footer: 'Opened Sep 8 · 1 reviewer', link: 'github.com', description: 'Rejects malformed deep links before routing and adds fuzz tests.', acceptance: 'Fuzz suite passes; no crash on malformed URIs.', labels: ['mobile', 'security'], project: 'Mobile delivery', linked: 'PR #476', timeline: [ { text: 'GitHub PR #476 · changes requested by Mei Lin', when: 'Fetched 14 min ago', dot: 'warn', link: 'Open PR' }, { text: 'PR/MR lane · listening every 5 min · last successful listen 14 min ago', when: 'Read-only MCP fetch', dot: 'warn' } ] },
+];
+
+const LANES = [
+  { id: 'idea', title: 'Idea', sub: 'Captured, not yet promoted', hasLoad: true, loadingLabel: 'Reading GitHub Issues, GitLab, Jira via MCP…' },
+  { id: 'change', title: 'OpenSpec change', sub: 'Branch and change artifacts exist', loadingLabel: 'Reconciling OpenSpec artifacts…' },
+  { id: 'progress', title: 'In progress', sub: 'Implementation evidence is active', loadingLabel: 'Reconciling commits and session evidence…' },
+  { id: 'pr', title: 'PR/MR', sub: 'Host review is open or ready', hasFetch: true, loadingLabel: 'Fetching PRs and MRs via MCP…' },
+];
+
+const PREFLIGHT = ['Claude Code available on this workspace', 'Interlock command available in repository', 'Repository access', 'Working directory matches selected repository', 'No other Jumphour session running'];
+
+class Component extends DCLogic {
+  state = {
+    theme: 'light', systemDark: false, cats: false, width: 1440,
+    scenario: null, query: '', repoFilter: 'all', sourceFilter: 'all', ownerFilter: 'all',
+    selectedId: null, hidden: [], extra: [], mobileLane: 0,
+    settingsOpen: false, legendOpen: false, loadMenuOpen: false, fetchMenuOpen: false, overflowOpen: false, sourcesOpen: false,
+    composeOpen: false, form: { title: '', problem: '', context: '', repo: '', owner: 'Unassigned', links: '' }, formTouched: false, submitting: false,
+    launchOpen: false, launchRepo: null, launchPhase: 'config', launchChecks: [], launchError: null,
+    promoteOpen: false, promoteStep: 'configure', promoteRepo: null, promoteName: '', promoteProgress: 0, promoteFailed: false,
+    loadingUntil: 0,
+  };
+  timers = [];
+  componentDidMount() {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    this.mq = mq; this.onMq = () => this.setState({ systemDark: mq.matches }); mq.addEventListener('change', this.onMq); this.onMq();
+    this.onResize = () => this.setState({ width: window.innerWidth }); window.addEventListener('resize', this.onResize); this.onResize();
+    this.onKey = (e) => { if (e.key === 'Escape') this.escape(); }; window.addEventListener('keydown', this.onKey);
+    this.onDoc = (e) => { if (!e.target.closest('[role="menu"],[aria-haspopup="menu"],[aria-expanded]')) this.setState({ loadMenuOpen: false, fetchMenuOpen: false, overflowOpen: false, legendOpen: false }); }; document.addEventListener('click', this.onDoc);
+  }
+  componentWillUnmount() { this.mq && this.mq.removeEventListener('change', this.onMq); window.removeEventListener('resize', this.onResize); window.removeEventListener('keydown', this.onKey); document.removeEventListener('click', this.onDoc); this.timers.forEach(clearTimeout); }
+  later(fn, ms) { const t = setTimeout(fn, ms); this.timers.push(t); return t; }
+  escape() {
+    const s = this.state;
+    if (s.loadMenuOpen || s.fetchMenuOpen || s.overflowOpen || s.legendOpen || s.settingsOpen) return this.setState({ loadMenuOpen: false, fetchMenuOpen: false, overflowOpen: false, legendOpen: false, settingsOpen: false });
+    if (s.launchOpen && s.launchPhase !== 'running') return this.setState({ launchOpen: false });
+    if (s.promoteOpen && s.promoteStep !== 'progress') return this.setState({ promoteOpen: false });
+    if (s.composeOpen && !s.submitting) return this.setState({ composeOpen: false });
+    if (s.sourcesOpen) return this.setState({ sourcesOpen: false });
+    if (s.selectedId) return this.setState({ selectedId: null });
+  }
+  scenario() { return this.state.scenario ?? this.props.boardState ?? 'populated'; }
+  allCards() { return CARDS.concat(this.state.extra).filter(c => !this.state.hidden.includes(c.id)); }
+  filtered() {
+    const { query, repoFilter, sourceFilter, ownerFilter } = this.state; const q = query.trim().toLowerCase();
+    return this.allCards().filter(c => (repoFilter === 'all' || c.repo === repoFilter) && (sourceFilter === 'all' || c.source === sourceFilter) && (ownerFilter === 'all' || c.owner === ownerFilter) && (!q || (c.title + ' ' + c.key + ' ' + (c.changeName || '') + ' ' + c.evidence).toLowerCase().includes(q)));
+  }
+  deco(c, selected, catsOn) {
+    const ini = c.owner === 'Unassigned' ? '–' : c.owner.split(' ').map(w => w[0]).join('');
+    return { ...c, sourceLabel: SRC_LABEL[c.source], badgeStyle: BADGE[c.source], initials: ini, avatarStyle: OWNER_COLORS[c.owner] || OWNER_COLORS.Unassigned, hasRelevance: !!c.relevance, evidenceDot: DOT[c.dot], hasAgentNote: !!c.agentNote, hasLink: !!c.link, linkLabel: c.link, isSelected: selected, selStyle: selected ? 'border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)' : '', select: () => this.setState(s => ({ selectedId: s.selectedId === c.id ? null : c.id, sourcesOpen: false, overflowOpen: false })) };
+  }
+  startLoading(ms) { this.setState({ loadMenuOpen: false, fetchMenuOpen: false, scenario: 'loading' }); this.later(() => this.setState({ scenario: 'populated' }), ms || 1400); }
+  runLaunch() {
+    const outcome = this.props.launchOutcome ?? 'success';
+    this.setState({ launchPhase: 'checking', launchChecks: PREFLIGHT.map(() => 'pending'), launchError: null });
+    const failAt = { unavailable: 0, 'no-interlock': 1, mismatch: 3, 'active-session': 4 }[outcome];
+    PREFLIGHT.forEach((_, i) => this.later(() => {
+      this.setState(s => { const ch = s.launchChecks.slice(); if (failAt === i) { ch[i] = 'fail'; for (let j = i + 1; j < ch.length; j++) ch[j] = 'skipped'; return { launchChecks: ch, launchPhase: 'error', launchError: outcome }; } if (s.launchPhase === 'error') return null; ch[i] = 'ok'; return { launchChecks: ch }; });
+      if (i === PREFLIGHT.length - 1 && failAt === undefined) this.later(() => this.setState({ launchPhase: 'running' }), 300);
+    }, 350 * (i + 1)));
+  }
+  startPromote() {
+    const fail = (this.props.promoteOutcome ?? 'success') === 'branch-exists';
+    this.setState({ promoteStep: 'progress', promoteProgress: 0, promoteFailed: false });
+    [1, 2, 3, 4].forEach(n => this.later(() => this.setState(s => { if (s.promoteStep !== 'progress') return null; if (fail && n === 2) return { promoteFailed: true, promoteStep: 'error', promoteProgress: 1 }; if (n === 4) return { promoteProgress: 4, promoteStep: 'success' }; return { promoteProgress: n }; }), 700 * n));
+  }
+  renderVals() {
+    const s = this.state; const scen = this.scenario();
+    const theme = s.themeTouched ? s.theme : (this.props.theme ?? 'light');
+    const resolvedTheme = theme === 'system' ? (s.systemDark ? 'dark' : 'light') : theme;
+    const cats = s.catsTouched ? s.cats : (this.props.cats ?? false);
+    const isMobile = s.width < 760, isTablet = s.width < 1100;
+    const isLoading = scen === 'loading';
+    const showEmptyBoard = scen === 'empty' && s.extra.length === 0;
+    let cards = showEmptyBoard ? [] : this.filtered();
+    if (scen === 'filtered-empty' && s.sourceFilter === 'all' && s.repoFilter === 'all') cards = cards.filter(c => c.source === 'Jira' && c.repo === 'acme/mobile-shell');
+    const filtersActive = s.repoFilter !== 'all' || s.sourceFilter !== 'all' || s.ownerFilter !== 'all' || !!s.query || scen === 'filtered-empty';
+    const heard = {
+      idea: scen === 'jira-failed' ? ['Last heard 2 min ago · Jira delayed', 'color:var(--amber);font-weight:600'] : ['Last heard 2 min ago', ''],
+      change: ['Last heard 4 min ago', ''],
+      progress: scen === 'source-error' ? ['Listening delayed · retrying', 'color:var(--amber);font-weight:600'] : ['Last heard 1 min ago', ''],
+      pr: scen === 'source-error' ? ['Last successful listen 48 min ago', 'color:var(--amber);font-weight:600'] : ['Last successful listen 14 min ago', ''],
+    };
+    const sourceName = s.sourceFilter === 'Jira' || scen === 'filtered-empty' ? 'Jira' : s.sourceFilter;
+    const lanes = LANES.map((l, i) => { const lc = cards.filter(c => c.lane === l.id).map(c => this.deco(c, c.id === s.selectedId, cats)); return { ...l, count: isLoading ? '…' : lc.length, cards: lc, heard: heard[l.id][0], heardStyle: heard[l.id][1], isEmpty: !isLoading && lc.length === 0, showResetFilters: filtersActive, showCat: cats && !filtersActive, emptyText: filtersActive ? (l.id === 'idea' ? `No ${sourceName === 'all' ? '' : sourceName + ' '}ideas match ${s.repoFilter === 'all' && scen !== 'filtered-empty' ? 'these filters' : 'this repository'}` : `No ${l.title.toLowerCase()} items match these filters`) : `Nothing derived into ${l.title} yet`, isActiveMobile: s.mobileLane === i, selectMobile: () => this.setState({ mobileLane: i }), mobileTabStyle: s.mobileLane === i ? 'border-color:var(--accent);background:var(--accentSoft);color:var(--ink);font-weight:600' : '' }; });
+    const selRaw = this.allCards().find(c => c.id === s.selectedId);
+    const sel = selRaw ? { ...this.deco(selRaw, true, cats), canSpec: selRaw.lane === 'idea', canShip: selRaw.lane === 'change', snapshotLine: selRaw.source === 'Manual' ? 'Created in Jumphour · ' + selRaw.age.replace('Composed ', '') : 'Snapshot captured ' + selRaw.age.replace(/^(Snapshot|Fetched) /, ''), snapshotShort: selRaw.age.replace(/^(Snapshot|Fetched|Composed) /, ''), readOnlyNote: selRaw.source === 'Manual' ? 'Local record. Composed ideas live only in Jumphour until promoted or specced.' : 'Read-only snapshot. Jumphour never writes back to this source.', timeline: selRaw.timeline.map(t => ({ ...t, dot: DOT[t.dot], hasLink: !!t.link })) } : { labels: [], timeline: [] };
+    const launchRepo = s.launchRepo ?? (selRaw && selRaw.repo) ?? 'acme/api-gateway';
+    const isShip = selRaw && selRaw.lane === 'change';
+    const checkStyles = { pending: ['background:var(--surface3);color:var(--ink3)', '·', 'checking'], ok: ['background:var(--greenSoft);color:var(--green)', '✓', 'ok'], fail: ['background:var(--redSoft);color:var(--red)', '✕', 'failed'], skipped: ['background:var(--surface3);color:var(--ink3)', '–', 'skipped'], idle: ['border:1px solid var(--border2);color:var(--ink3)', '', 'not checked'] };
+    const errCopy = {
+      unavailable: ['Claude Code is unavailable', "We can't open the embedded CLI on this workspace. The board has not changed."],
+      'no-interlock': ['Interlock is not installed', `${isShip ? 'interlock:ship' : 'interlock:spec'} is unavailable in this repository. Install or configure Interlock, then try again.`],
+      mismatch: ['Repository working directory mismatch', `The CLI opened in a different directory than ${launchRepo}. The command was blocked before running.`],
+      'active-session': ['A Jumphour Claude Code session is already running', 'Only one embedded session runs per workspace. Exit it before starting another; nothing was queued.'],
+    };
+    const cmd = isShip ? 'interlock:ship' : 'interlock:spec';
+    const term = isShip
+      ? `${REPO_DIR[launchRepo]} $ claude\n\nClaude Code v1.0 · ${launchRepo}\n\n> /interlock:ship ${selRaw && selRaw.changeName}\n\nInterlock · ship\n  change    openspec/changes/${selRaw && selRaw.changeName}/\n  tasks     reading tasks.md … 7 tasks, 0 complete\n  branch    feat/${selRaw && selRaw.changeName} (will create)\n\nInterlock will propose a plan before editing files.\n\n> `
+      : `${REPO_DIR[launchRepo]} $ claude\n\nClaude Code v1.0 · ${launchRepo}\n\n> /interlock:spec\n\nInterlock · spec\n  source    ${selRaw ? SRC_LABEL[selRaw.source] + ' ' + selRaw.key : ''}\n  title     ${selRaw ? selRaw.title : ''}\n  target    openspec/changes/<change-name>/\n\nReading repository conventions from openspec/config.yaml …\nDrafting proposal.md — I will ask before writing files.\n\n> `;
+    const launch = {
+      title: isShip ? 'Start ship with Claude Code' : 'Start spec with Claude Code', repo: launchRepo, cwd: REPO_DIR[launchRepo], command: cmd, hasChangePath: !!isShip, changePath: isShip ? `openspec/changes/${selRaw.changeName}/` : '',
+      isConfig: s.launchPhase !== 'running', isRunning: s.launchPhase === 'running', checking: s.launchPhase === 'checking', hasError: s.launchPhase === 'error',
+      checks: PREFLIGHT.map((label, i) => { const st = s.launchPhase === 'config' ? 'idle' : (s.launchChecks[i] || 'pending'); const cs = checkStyles[st]; return { label, style: cs[0], glyph: cs[1], status: cs[2] }; }),
+      errTitle: s.launchError ? errCopy[s.launchError][0] : '', errBody: s.launchError ? errCopy[s.launchError][1] : '', showMismatch: s.launchError === 'mismatch', showActive: s.launchError === 'active-session', showRetry: s.launchError === 'unavailable' || s.launchError === 'no-interlock',
+      primaryLabel: s.launchPhase === 'checking' ? 'Running preflight…' : (isShip ? 'Open Claude Code and start ship' : 'Open Claude Code and start spec'), primaryDisabled: s.launchPhase !== 'config', primaryStyle: s.launchPhase !== 'config' ? 'opacity:.6;cursor:default' : '', terminal: term,
+    };
+    const pname = s.promoteName || (selRaw && (selRaw.changeName || selRaw.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 4).join('-'))) || 'change';
+    const pSteps = ['Validating change name', 'Creating branch', 'Writing OpenSpec artifacts', 'Opening GitHub pull request'].map((label, i) => { const done = s.promoteProgress > i, active = s.promoteProgress === i && s.promoteStep === 'progress', failed = s.promoteFailed && s.promoteProgress === i; return { label, glyph: done ? '✓' : failed ? '✕' : active ? '' : String(i + 1), style: done ? 'background:var(--greenSoft);color:var(--green)' : failed ? 'background:var(--redSoft);color:var(--red)' : active ? 'border:2px solid var(--accent);border-right-color:transparent;animation:jhSpin .8s linear infinite' : 'border:1px solid var(--border2);color:var(--ink3)', textStyle: done || active ? 'color:var(--ink)' : 'color:var(--ink3)', status: done ? 'done' : failed ? 'failed' : active ? 'in progress' : 'waiting' }; });
+    const promote = { repo: s.promoteRepo ?? launchRepo, name: pname, branch: `spec/${pname}`, pathProposal: `openspec/changes/${pname}/proposal.md`, pathTasks: `openspec/changes/${pname}/tasks.md`, pathSpecs: `openspec/changes/${pname}/specs/…`, isConfigure: s.promoteStep === 'configure', isProgress: s.promoteStep === 'progress', isSuccess: s.promoteStep === 'success', isError: s.promoteStep === 'error', steps: pSteps, stepLabel: { configure: 'Step 1 of 3 · Configure', progress: 'Step 2 of 3 · Creating artifacts', success: 'Step 3 of 3 · Done', error: 'Step 2 of 3 · Creation failed' }[s.promoteStep] };
+    const f = s.form; const titleInvalid = s.formTouched && !f.title.trim(); const repoInvalid = s.formTouched && !f.repo;
+    const form = { ...f, titleInvalid, repoInvalid, titleStyle: titleInvalid ? 'border-color:var(--red)' : '', repoStyle: repoInvalid ? 'border-color:var(--red)' : '', submitting: s.submitting, submitLabel: s.submitting ? 'Saving…' : 'Save idea', submitStyle: s.submitting ? 'opacity:.7;cursor:default' : '' };
+    const jiraDown = scen === 'jira-failed', ghDown = scen === 'source-error';
+    const sources = [
+      { label: 'GitHub', badgeStyle: BADGE.GitHub, scope: 'acme/* · Issues, PRs', status: ghDown ? 'Unreachable' : 'Healthy', statusStyle: ghDown ? 'color:var(--red)' : 'color:var(--green)', line: ghDown ? 'GitHub via MCP could not be reached on the last two listens.' : 'Last snapshot 14 min ago · 6 ideas, 3 PRs in scope', detail: ghDown ? 'Last successful snapshot 48 min ago. Existing cards remain visible.' : 'Reads Issues and PRs only. No writes.', canRetry: ghDown, retryLabel: 'Retry GitHub source' },
+      { label: 'GitLab', badgeStyle: BADGE.GitLab, scope: 'acme/api-gateway · issues, MRs', status: 'Healthy', statusStyle: 'color:var(--green)', line: 'Last snapshot 1 h ago · 2 ideas, 1 MR in scope', detail: 'Reads issues and MRs only. No writes.', canRetry: false },
+      { label: 'Jira · MCP', badgeStyle: BADGE.Jira, scope: 'Payments, MOB', status: jiraDown ? 'Unavailable' : 'Healthy', statusStyle: jiraDown ? 'color:var(--red)' : 'color:var(--green)', line: jiraDown ? "We couldn't refresh Jira snapshots for Payments. Your last captured Jira ideas are still shown." : 'Last snapshot 41 min ago · 3 ideas in scope', detail: jiraDown ? 'Last successful snapshot 41 min ago. Check the MCP connection or try again.' : 'Snapshots are stale after 60 min. Reads only.', canRetry: jiraDown, retryLabel: 'Retry Jira source' },
+    ];
+    const themeOn = 'background:var(--accentSoft);color:var(--accent)';
+    const panelW = isMobile ? 'position:fixed;inset:0;z-index:45;width:100%' : `width:${isTablet ? 380 : 440}px`;
+    const set = k => e => this.setState({ form: { ...this.state.form, [k]: e.target.value } });
+    const visibleLanes = isMobile ? [lanes[s.mobileLane]] : lanes;
+    return {
+      resolvedTheme, cats, noCats: !cats, catsLabel: cats ? 'on' : 'off', catsTrack: cats ? 'background:var(--accent)' : 'background:var(--border2)', catsKnob: cats ? 'left:12px' : 'left:2px', catsKnobLg: cats ? 'left:17px' : 'left:3px',
+      lightLabel: cats ? 'Sunny spot' : 'Light', darkLabel: cats ? 'Night prowl' : 'Dark',
+      themeIsSystem: theme === 'system', themeIsLight: theme === 'light', themeIsDark: theme === 'dark', themeBtnSystem: theme === 'system' ? themeOn : '', themeBtnLight: theme === 'light' ? themeOn : '', themeBtnDark: theme === 'dark' ? themeOn : '',
+      setThemeSystem: () => this.setState({ theme: 'system', themeTouched: true }), setThemeLight: () => this.setState({ theme: 'light', themeTouched: true }), setThemeDark: () => this.setState({ theme: 'dark', themeTouched: true }), toggleCats: () => this.setState(st => ({ cats: !cats, catsTouched: true })),
+      isMobile, notMobile: !isMobile, lanes, visibleLanes, isLoading, notLoading: !isLoading, showEmptyBoard, showBoard: !showEmptyBoard,
+      query: s.query, setQuery: e => this.setState({ query: e.target.value }), repoFilter: s.repoFilter, sourceFilter: s.sourceFilter, ownerFilter: s.ownerFilter,
+      setRepoFilter: e => this.setState({ repoFilter: e.target.value, scenario: scen === 'filtered-empty' ? 'populated' : s.scenario }), setSourceFilter: e => this.setState({ sourceFilter: e.target.value, scenario: scen === 'filtered-empty' ? 'populated' : s.scenario }), setOwnerFilter: e => this.setState({ ownerFilter: e.target.value }),
+      resetFilters: () => this.setState({ repoFilter: 'all', sourceFilter: 'all', ownerFilter: 'all', query: '', scenario: 'populated' }),
+      legendOpen: s.legendOpen, toggleLegend: () => this.setState({ legendOpen: !s.legendOpen, loadMenuOpen: false }), loadMenuOpen: s.loadMenuOpen, toggleLoadMenu: () => this.setState({ loadMenuOpen: !s.loadMenuOpen, legendOpen: false, fetchMenuOpen: false }), toggleLoadMenuFromEmpty: () => this.setState({ loadMenuOpen: true }), fetchMenuOpen: s.fetchMenuOpen, toggleFetchMenu: () => this.setState({ fetchMenuOpen: !s.fetchMenuOpen, loadMenuOpen: false }),
+      loadGitHub: () => this.startLoading(), loadGitLab: () => this.startLoading(), loadJira: () => this.startLoading(), loadManual: () => this.startLoading(900), fetchGitHub: () => this.startLoading(), fetchGitLab: () => this.startLoading(),
+      settingsOpen: s.settingsOpen, toggleSettings: () => this.setState({ settingsOpen: !s.settingsOpen }),
+      showSourceBanner: jiraDown || ghDown, bannerTitle: jiraDown ? 'Jira via MCP is unavailable' : 'GitHub could not be reached', bannerBody: jiraDown ? "We couldn't refresh Jira snapshots for Payments. Your last captured Jira ideas are still shown." : 'The last two listens failed. Existing GitHub snapshots and PR cards are still shown.', bannerHint: jiraDown ? 'Check the MCP connection or try again. Last successful snapshot 41 min ago.' : 'Last successful snapshot 48 min ago.', bannerRetry: jiraDown ? 'Retry Jira source' : 'Retry GitHub source',
+      retrySource: () => { this.setState({ sourcesOpen: false }); this.startLoading(); },
+      sourcesOpen: s.sourcesOpen, openSources: () => this.setState({ sourcesOpen: true, settingsOpen: false, selectedId: null }), closeSources: () => this.setState({ sourcesOpen: false }), sources,
+      detailOpen: !!selRaw, sel, panelStyle: panelW, closeDetail: () => this.setState({ selectedId: null, overflowOpen: false }), overflowOpen: s.overflowOpen, toggleOverflow: () => this.setState({ overflowOpen: !s.overflowOpen }), closeMenus: () => this.setState({ overflowOpen: false }), hideCard: () => this.setState({ hidden: s.hidden.concat(s.selectedId), selectedId: null, overflowOpen: false }), noop: e => e.preventDefault(), stop: e => e.stopPropagation(),
+      composeOpen: s.composeOpen, openCompose: () => this.setState({ composeOpen: true, loadMenuOpen: false, formTouched: false }), closeCompose: () => this.setState({ composeOpen: false }), form, setFormTitle: set('title'), setFormProblem: set('problem'), setFormContext: set('context'), setFormRepo: set('repo'), setFormOwner: set('owner'), setFormLinks: set('links'),
+      submitCompose: () => { if (!f.title.trim() || !f.repo) return this.setState({ formTouched: true }); this.setState({ submitting: true }); this.later(() => { const id = 'm' + Date.now(); this.setState(st => ({ submitting: false, composeOpen: false, scenario: st.scenario === 'empty' ? 'populated' : st.scenario, selectedId: id, extra: st.extra.concat({ id, lane: 'idea', source: 'Manual', key: '', title: f.title.trim(), repo: f.repo, owner: f.owner, relevance: '', age: 'Composed just now', evidence: 'Created in Jumphour', dot: 'neutral', footer: 'Composed today', link: '', description: f.problem || 'No problem statement yet.', acceptance: f.context || 'Not specified.', labels: [], project: '—', linked: 'None yet', timeline: [{ text: 'Composed in Jumphour by Priya Nair', when: 'Just now', dot: 'neutral' }, { text: 'Idea lane · listening every 5 min · last heard 2 min ago', when: 'Read-only projection', dot: 'ok' }] }), form: { title: '', problem: '', context: '', repo: '', owner: 'Unassigned', links: '' } })); }, 900); },
+      launchOpen: s.launchOpen, openLaunch: () => this.setState({ launchOpen: true, launchPhase: 'config', launchRepo: null, launchError: null }), closeLaunch: () => this.setState({ launchOpen: false, launchPhase: 'config' }), launch, setLaunchRepo: e => this.setState({ launchRepo: e.target.value }), runLaunch: () => this.runLaunch(), resetLaunch: () => this.setState({ launchPhase: 'config', launchError: null }), openActiveSession: () => this.setState({ selectedId: 'c9', launchPhase: 'running', launchRepo: 'acme/mobile-shell' }), sheetStyle: isMobile ? 'width:100%' : 'width:min(640px,100%)',
+      promoteOpen: s.promoteOpen, openPromote: () => this.setState({ promoteOpen: true, promoteStep: 'configure', promoteRepo: null, promoteName: '', promoteProgress: 0, promoteFailed: false }), closePromote: () => this.setState({ promoteOpen: false }), promote, setPromoteRepo: e => this.setState({ promoteRepo: e.target.value }), setPromoteName: e => this.setState({ promoteName: e.target.value }), startPromote: () => this.startPromote(), promoteChooseName: () => this.setState({ promoteStep: 'configure', promoteName: pname + '-v2' }), viewChange: () => this.setState({ promoteOpen: false, selectedId: 'c5' }),
+      overlayClick: () => { if (s.launchPhase === 'running' || s.promoteStep === 'progress' || s.submitting) return; this.setState({ composeOpen: false, launchOpen: false, promoteOpen: false }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/* Task 9.3: repository table styling. Tokens only; no layout the markup depends on. */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fontSans);
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.th {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--ink2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.row + .row .td {
+  border-top: 1px solid var(--border);
+}
+
+.td {
+  padding: 10px 14px;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.mono {
+  font-family: var(--fontMono);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.status {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.reason {
+  color: var(--ink2);
+  overflow-wrap: anywhere;
+}

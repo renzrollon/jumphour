@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createSqliteDriver } from "./sqlite-driver";
 import { runMigrations } from "./migrate";
 import type { SqlDriver } from "./types";
-import { upsertInstallation } from "./installations";
+import { getInstallation, upsertInstallation } from "./installations";
 
 const migrationsDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -70,5 +70,19 @@ describe("installations uniqueness and upsert", () => {
       [1],
     );
     expect(row?.account_login).toBe("acme-renamed");
+  });
+});
+
+describe("getInstallation", () => {
+  it("returns the id and account login of a stored installation", () => {
+    upsertInstallation(driver, { githubInstallationId: 42, accountId: 100, accountLogin: "acme" });
+
+    expect(getInstallation(driver, 42)).toEqual({ installationId: 42, accountLogin: "acme" });
+  });
+
+  it("returns undefined for an installation id that is not stored", () => {
+    upsertInstallation(driver, { githubInstallationId: 42, accountId: 100, accountLogin: "acme" });
+
+    expect(getInstallation(driver, 999)).toBeUndefined();
   });
 });

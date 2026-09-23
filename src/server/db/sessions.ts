@@ -2,9 +2,9 @@
 // (task 7.2: specs/github-app-installation/spec.md "Edge case — same
 // GitHub user in two installations"). Session rows themselves are created
 // by ../github/oauth-session.ts (task 3.4, `installation_id` starting
-// NULL); this module only ever updates the `installation_id` an existing
-// session already has, or reads it back — it never creates or deletes a
-// session row.
+// NULL); this module updates the `installation_id` an existing session
+// already has, reads it back, and deletes a session on local sign-out
+// (design-system-and-app-shell Decision 7) — it never creates a session row.
 import type { SqlDriver } from "./types";
 
 export interface SessionRow {
@@ -42,4 +42,14 @@ export function getSession(driver: SqlDriver, sessionId: string): SessionRow | u
   if (!row) return undefined;
 
   return { sessionId: row.id, githubUserId: row.github_user_id, installationId: row.installation_id };
+}
+
+/**
+ * Deletes the session row identified by `sessionId`. Returns whether a row
+ * was removed; `false` (no such session) is not an error — sign-out treats it
+ * as already signed out.
+ */
+export function deleteSession(driver: SqlDriver, sessionId: string): boolean {
+  const result = driver.run(`DELETE FROM sessions WHERE id = ?`, [sessionId]);
+  return result.changes > 0;
 }

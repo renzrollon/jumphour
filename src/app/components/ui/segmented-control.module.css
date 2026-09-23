@@ -1,0 +1,40 @@
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface2);
+  /* No overflow clipping: the coarse-pointer ::after hit area must not be cut. */
+}
+
+.option {
+  /*
+   * min-width equals the coarse-pointer floor, so the globals.css ::after
+   * (width max(100%, 44px)) never grows wider than the drawn option and
+   * adjacent options' activation areas cannot overlap. Applies at every
+   * pointer, so fine-pointer layout matches coarse-pointer layout.
+   */
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.option:hover {
+  color: var(--ink);
+}
+
+.option[aria-checked="true"] {
+  border-color: var(--border2);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}

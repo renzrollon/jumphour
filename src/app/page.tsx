@@ -31,6 +31,18 @@
 // schema (migrations/0001_core_schema.sql has no such table). That data
 // source is undecided, not guessed here — task 7.2's switchCurrentInstallation
 // already exists as the backend half once a caller supplies that list.
+//
+// design-system-and-app-shell task 9.1 (specs/app-shell/spec.md "Preserve the
+// repository and discovery surface inside the shell"): the signed-in body
+// now renders as ./components/repository-surface.tsx inside the AppShell,
+// which receives the workspace label (resolveWorkspace over the session's
+// installation), the account label (resolveAccount over the session's user)
+// and the server-read appearance. Row selection, the empty-state copy and the
+// Refresh target are computed here exactly as before and handed through.
+//
+// Task 9.2: the signed-out branch renders ./components/signed-out-view.tsx.
+// Only the `signin` query key is read, and only compared against the fixed
+// "failed" marker — no other query value reaches the rendered view.
 import { cookies, headers } from "next/headers";
 import { getDriver } from "../server/db";
 import { getEnv } from "../server/env";
@@ -40,14 +52,26 @@ import { listDiscoveryReports } from "../server/db/discovery-reports";
 import { buildRepositoryTableRows } from "../server/github/repository-table-view";
 import { buildGithubSignInUrl } from "../server/github/sign-in-url";
 import { resolveRepositoryListEmptyState } from "../server/github/repository-list-empty-state";
-import { RepositoryTable } from "./components/repository-table";
-import { InstallationPicker } from "./components/installation-picker";
-import { SignInLink } from "./components/sign-in-link";
+import { SignedOutView } from "./components/signed-out-view";
+import { RepositorySurface } from "./components/repository-surface";
+import { AppShell } from "./components/shell/app-shell";
+import { resolveWorkspace } from "./components/shell/workspace";
+import { resolveAccount } from "./components/shell/account";
+import { CATS_COOKIE, THEME_COOKIE, parseAppearance } from "../lib/appearance/appearance";
 
 const SESSION_COOKIE = "jumphour_session";
 const OAUTH_CALLBACK_PATH = "/api/github/oauth/callback";
+/** design.md Decision 6: the OAuth callback's failure landing is `/?signin=failed`. */
+const SIGN_IN_FAILED_MARKER = "failed";
 
-export default async function HomePage() {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+function firstValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const sessionId = cookieStore.get(SESSION_COOKIE)?.value ?? null;
   const session = sessionId ? getSession(getDriver(), sessionId) : undefined;
@@ -60,14 +84,12 @@ export default async function HomePage() {
     const redirectUri = `${proto}://${host}${OAUTH_CALLBACK_PATH}`;
 
     return (
-      <main>
-        <h1>Jumphour</h1>
-        {env.githubAppClientId ? (
-          <SignInLink href={buildGithubSignInUrl({ clientId: env.githubAppClientId, redirectUri })} />
-        ) : (
-          <p>GitHub OAuth is not configured.</p>
-        )}
-      </main>
+      <SignedOutView
+        signInHref={
+          env.githubAppClientId ? buildGithubSignInUrl({ clientId: env.githubAppClientId, redirectUri }) : null
+        }
+        signInFailed={firstValue(params.signin) === SIGN_IN_FAILED_MARKER}
+      />
     );
   }
 
@@ -84,17 +106,22 @@ export default async function HomePage() {
     rowCount: rows.length,
   });
 
+  const appearance = parseAppearance({
+    theme: cookieStore.get(THEME_COOKIE)?.value,
+    cats: cookieStore.get(CATS_COOKIE)?.value,
+  });
+
   return (
-    <main>
-      <h1>Jumphour</h1>
-      <InstallationPicker installations={[]} currentInstallationId={session.installationId} />
-      {emptyStateExplanation ? <p>{emptyStateExplanation}</p> : null}
-      <RepositoryTable rows={rows} />
-      {session.installationId !== null ? (
-        <form action="/api/github/refresh" method="post">
-          <button type="submit">Refresh</button>
-        </form>
-      ) : null}
-    </main>
+    <AppShell
+      workspace={resolveWorkspace(driver, session.installationId)}
+      account={resolveAccount(driver, session.githubUserId)}
+      appearance={appearance}
+    >
+      <RepositorySurface
+        installationId={session.installationId}
+        rows={rows}
+        emptyStateExplanation={emptyStateExplanation}
+      />
+    </AppShell>
   );
 }

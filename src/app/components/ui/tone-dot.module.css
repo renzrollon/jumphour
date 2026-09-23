@@ -1,0 +1,28 @@
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--ink3);
+}
+
+.neutral {
+  background: var(--ink3);
+}
+
+.ok {
+  background: var(--green);
+}
+
+.warn {
+  background: var(--amber);
+}
+
+.bad {
+  background: var(--red);
+}
+
+.accent {
+  background: var(--accent);
+}

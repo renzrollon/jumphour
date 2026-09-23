@@ -7,6 +7,7 @@ const KEYS = [
   "GITHUB_APP_CLIENT_ID",
   "GITHUB_APP_CLIENT_SECRET",
   "DATABASE_PATH",
+  "JUMPHOUR_UI_PREVIEW",
 ] as const;
 
 let saved: Record<string, string | undefined>;
@@ -52,5 +53,24 @@ describe("getEnv", () => {
     process.env.GITHUB_APP_ID = "";
 
     expect(getEnv().githubAppId).toBeUndefined();
+  });
+});
+
+// Task 10.1 (design.md Decision 9): previews are on only for exactly "1".
+describe("getEnv().uiPreviewEnabled", () => {
+  it('is true when JUMPHOUR_UI_PREVIEW is exactly "1"', () => {
+    process.env.JUMPHOUR_UI_PREVIEW = "1";
+
+    expect(getEnv().uiPreviewEnabled).toBe(true);
+  });
+
+  it("is false when JUMPHOUR_UI_PREVIEW is unset", () => {
+    expect(getEnv().uiPreviewEnabled).toBe(false);
+  });
+
+  it.each(["", "0", "true", "yes", " 1", "1 ", "01"])('is false when JUMPHOUR_UI_PREVIEW is "%s"', (value) => {
+    process.env.JUMPHOUR_UI_PREVIEW = value;
+
+    expect(getEnv().uiPreviewEnabled).toBe(false);
   });
 });

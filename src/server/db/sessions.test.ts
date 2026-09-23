@@ -9,7 +9,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createSqliteDriver } from "./sqlite-driver";
 import { runMigrations } from "./migrate";
 import type { SqlDriver } from "./types";
-import { getSession, setSessionInstallation } from "./sessions";
+import { deleteSession, getSession, setSessionInstallation } from "./sessions";
 
 const migrationsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "migrations");
 
@@ -70,5 +70,28 @@ describe("setSessionInstallation", () => {
 
     expect(updated).toBe(false);
     expect(getSession(driver, "missing")).toBeUndefined();
+  });
+});
+
+describe("deleteSession", () => {
+  it("deletes a live session, returns true, and the session is no longer readable", () => {
+    driver.run(`INSERT INTO sessions (id, github_user_id, installation_id) VALUES (?, ?, ?)`, ["session-1", 7, 1]);
+
+    expect(deleteSession(driver, "session-1")).toBe(true);
+    expect(getSession(driver, "session-1")).toBeUndefined();
+  });
+
+  it("returns false without throwing for an unknown session id", () => {
+    expect(() => deleteSession(driver, "missing")).not.toThrow();
+    expect(deleteSession(driver, "missing")).toBe(false);
+  });
+
+  it("leaves every other session row untouched", () => {
+    driver.run(`INSERT INTO sessions (id, github_user_id, installation_id) VALUES (?, ?, ?)`, ["session-1", 7, 1]);
+    driver.run(`INSERT INTO sessions (id, github_user_id, installation_id) VALUES (?, ?, ?)`, ["session-2", 7, 2]);
+
+    expect(deleteSession(driver, "session-1")).toBe(true);
+    expect(getSession(driver, "session-2")).toEqual({ sessionId: "session-2", githubUserId: 7, installationId: 2 });
+    expect(driver.get<{ n: number }>("SELECT COUNT(*) AS n FROM sessions")!.n).toBe(1);
   });
 });

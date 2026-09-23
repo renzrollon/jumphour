@@ -10,6 +10,12 @@
 // `<select name="installationId">` submitting to `action`, so a route can
 // wire the actual switch (task 7.2's switchCurrentInstallation) without this
 // component importing a driver or GitHub client of its own.
+//
+// design-system-and-app-shell task 9.3: restyled through
+// installation-picker.module.css — class names only; the form, label,
+// select and submit button, and the exported props, are unchanged.
+import styles from "./installation-picker.module.css";
+
 export interface InstallationOption {
   installationId: number;
   accountLogin: string;
@@ -28,10 +34,10 @@ export function InstallationPicker({ installations, currentInstallationId, actio
   }
 
   return (
-    <form action={action}>
-      <label>
+    <form action={action} className={styles.form}>
+      <label className={styles.label}>
         Installation
-        <select name="installationId" defaultValue={currentInstallationId ?? undefined}>
+        <select className={styles.select} name="installationId" defaultValue={currentInstallationId ?? undefined}>
           {installations.map((installation) => (
             <option key={installation.installationId} value={installation.installationId}>
               {installation.accountLogin}
@@ -39,7 +45,9 @@ export function InstallationPicker({ installations, currentInstallationId, actio
           ))}
         </select>
       </label>
-      <button type="submit">Switch</button>
+      <button type="submit" className={styles.button}>
+        Switch
+      </button>
     </form>
   );
 }

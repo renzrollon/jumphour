@@ -44,3 +44,29 @@ export function upsertInstallation(driver: SqlDriver, params: InstallationUpsert
     }
   });
 }
+
+export interface InstallationSummary {
+  installationId: number;
+  accountLogin: string;
+}
+
+interface InstallationSummarySqlRow {
+  github_installation_id: number;
+  account_login: string;
+}
+
+/**
+ * Returns the installation's id and account login, or `undefined` when no row
+ * exists for `installationId`. A missing row is reported as missing — callers
+ * render a neutral label, never a numeric id or an invented name.
+ */
+export function getInstallation(driver: SqlDriver, installationId: number): InstallationSummary | undefined {
+  const row = driver.get<InstallationSummarySqlRow>(
+    `SELECT github_installation_id, account_login FROM installations WHERE github_installation_id = ?`,
+    [installationId],
+  );
+
+  if (!row) return undefined;
+
+  return { installationId: row.github_installation_id, accountLogin: row.account_login };
+}

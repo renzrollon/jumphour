@@ -16,6 +16,13 @@ export interface Env {
   githubAppClientId: string | undefined;
   githubAppClientSecret: string | undefined;
   databasePath: string | undefined;
+  /**
+   * design-system-and-app-shell task 10.1 (design.md Decision 9): whether the
+   * fixture-driven `/dev/ui` preview pages may render. True only when
+   * `JUMPHOUR_UI_PREVIEW` is exactly "1"; every other value, unset included,
+   * is false — default off everywhere, development too.
+   */
+  uiPreviewEnabled: boolean;
 }
 
 function readOptional(name: string): string | undefined {
@@ -31,5 +38,6 @@ export function getEnv(): Env {
     githubAppClientId: readOptional("GITHUB_APP_CLIENT_ID"),
     githubAppClientSecret: readOptional("GITHUB_APP_CLIENT_SECRET"),
     databasePath: readOptional("DATABASE_PATH"),
+    uiPreviewEnabled: process.env.JUMPHOUR_UI_PREVIEW === "1",
   };
 }

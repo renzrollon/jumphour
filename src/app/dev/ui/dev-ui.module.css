@@ -1,0 +1,98 @@
+/*
+ * Task 10.3: layout for the /dev/ui primitives-and-shell index. Presentational
+ * only — every primitive keeps its own styling from its own module.css; this
+ * file lays out the index's page frame, the persistent preview label, and its
+ * primitive-showcase sections. Shared by ./page.tsx and ./primitives-gallery.tsx.
+ */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 64px;
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  background: var(--amberSoft);
+  color: var(--ink);
+  font-family: var(--fontSans);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--fontSans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+}
+
+.iconTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--ink);
+}
+
+.iconName {
+  font-size: 0.75rem;
+  color: var(--ink2);
+  text-align: center;
+}
+
+.status {
+  margin: 0;
+  color: var(--ink2);
+  font-size: 0.875rem;
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

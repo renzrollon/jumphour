@@ -1,0 +1,24 @@
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink2);
+}
+
+.spinner {
+  display: inline-flex;
+  flex: none;
+}
+
+.label {
+  min-width: 0;
+}
+
+/* Task 5.7: the ring stands still; the text keeps saying what is running. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .spinner * {
+    animation: none;
+  }
+}
