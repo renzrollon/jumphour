@@ -52,11 +52,19 @@ describe("narrow-viewport media query", () => {
   });
 
   it("never hides the brand, workspace, controls group, settings entry, or account menu", () => {
+    // workflow-board-ui task 6.3 (design.md Decision 9): the Board /
+    // Repositories navigation is the one other thing that trades places by
+    // width — `.nav` leaves the bar below 760px, and the account menu's
+    // `.narrowNav` copy is hidden at 760px and above. shell-nav.test.tsx
+    // pins both; every other rule is still checked here.
     for (const rule of barRules.filter((r) => r.atRules.length > 0)) {
-      if (rule.selector === ".search" || rule.selector === ".wideOnly") continue;
+      if (rule.selector === ".search" || rule.selector === ".wideOnly" || rule.selector === ".nav") continue;
       expect(decl(rule).get("display")).not.toBe("none");
     }
-    for (const rule of accountRules) expect(decl(rule).get("display")).not.toBe("none");
+    for (const rule of accountRules) {
+      if (rule.selector === ".narrowNav" && rule.atRules.length === 0) continue;
+      expect(decl(rule).get("display")).not.toBe("none");
+    }
   });
 
   it("tightens the bar's spacing and narrows the account trigger below the breakpoint", () => {

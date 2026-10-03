@@ -23,6 +23,13 @@
   white-space: nowrap;
 }
 
+/* `labelVisible`: the label as a caption above the blocks, at any motion setting. */
+.visibleLabel {
+  margin: 0 2px 2px;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
 /* Task 5.7: static placeholder shape plus visible text, no motion. */
 @media (prefers-reduced-motion: reduce) {
   .block {

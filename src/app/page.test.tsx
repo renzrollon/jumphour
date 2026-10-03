@@ -1,14 +1,18 @@
-// Task 9.1 (specs/app-shell/spec.md "Preserve the repository and discovery
-// surface inside the shell"): the signed-in page renders inside the AppShell,
-// labelled from the stored installation and user rows, while the rows it
-// selects, the empty-state copy and the Refresh form's target are unchanged.
-// Task 9.2 (specs/app-shell/spec.md "Offer GitHub sign-in on a signed-out
-// view" and "Land a completed sign-in on the signed-in surface"): the
-// signed-out view's three states — configured, not configured, and
-// `?signin=failed` — the last with a fixed notice that carries nothing from
-// the request or the configuration.
+// workflow-board-ui task 6.1 (specs/workflow-board/spec.md "Present a fixed
+// four-lane projection board", failure "no installation is bound to the
+// session"): a signed-in visitor to `/` gets the workflow board built by
+// buildBoardView, scoped to the session's installation; without an
+// installation, an explanation and a link to the repository view instead of
+// lanes. The repository and discovery surface's own tests moved with it to
+// ./repositories/page.test.tsx (task 6.2).
+// design-system-and-app-shell task 9.2 (specs/app-shell/spec.md "Offer
+// GitHub sign-in on a signed-out view" and "Land a completed sign-in on the
+// signed-in surface"): the signed-out view's three states — configured, not
+// configured, and `?signin=failed` — the last with a fixed notice that
+// carries nothing from the request or the configuration. Unchanged by 6.1.
 // The real page runs against a real migrated SQLite file; only Next's request
-// APIs (`next/headers`) and the appearance server actions are stubbed.
+// APIs (`next/headers`, `next/navigation`) and the appearance server actions
+// are stubbed.
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -28,6 +32,14 @@ vi.mock("next/headers", () => ({
   headers: async () => ({ get: (name: string) => request.headers.get(name) ?? null }),
 }));
 
+// BoardScreen reads `?card=` through next/navigation, which has no router
+// outside the App Router.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock("./components/shell/appearance-actions", () => ({
   setThemePreference: vi.fn(),
   setCatsPreference: vi.fn(),
@@ -38,9 +50,9 @@ import { runMigrations } from "../server/db/migrate";
 import { upsertInstallation } from "../server/db/installations";
 import { upsertUser } from "../server/db/users";
 import { upsertInstallationRepository } from "../server/db/installation-repositories";
-import { upsertDiscoveryReport } from "../server/db/discovery-reports";
-import { NO_ACCESSIBLE_REPOSITORIES_EXPLANATION } from "../server/github/repository-list-empty-state";
 import { INSTALLATION_REQUIRED_EXPLANATION } from "../server/github/signed-in-surface";
+import { IDEA_INTAKE_UNAVAILABLE_REASON } from "../server/board/board-view";
+import { NOT_ENABLED_TITLE } from "./components/board/empty-board";
 import {
   OAUTH_NOT_CONFIGURED_EXPLANATION,
   SIGN_IN_FAILED_DETAIL,
@@ -49,7 +61,7 @@ import {
 import HomePage from "./page";
 
 const migrationsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "migrations");
-const BOARD_COLUMNS = ["Idea", "OpenSpec change", "In progress", "PR/MR"];
+const LANE_TITLES = ["OpenSpec change", "In progress", "PR/MR"];
 
 const savedEnv = { DATABASE_PATH: process.env.DATABASE_PATH, GITHUB_APP_CLIENT_ID: process.env.GITHUB_APP_CLIENT_ID };
 let tmpDir: string | undefined;
@@ -93,17 +105,10 @@ async function renderPage(searchParams: Record<string, string> = {}): Promise<st
   return renderToStaticMarkup(element);
 }
 
-describe("HomePage — signed-in surface inside the shell", () => {
-  it("renders the stored rows inside the shell, labelled with the installation and user", async () => {
+describe("HomePage — signed-in board", () => {
+  it("renders the board inside the shell from the provider, not the repository table", async () => {
     seedInstallation(7, "acme");
     upsertInstallationRepository(getDriver(), { installationId: 7, githubRepoId: 101, fullName: "acme/api-gateway" });
-    upsertDiscoveryReport(getDriver(), {
-      installationId: 7,
-      githubRepoId: 101,
-      status: "supported",
-      defaultBranch: "main",
-      tipSha: "abc123",
-    });
     signIn(7);
 
     const html = await renderPage();
@@ -112,13 +117,21 @@ describe("HomePage — signed-in surface inside the shell", () => {
     expect(html.match(/<header/g)).toHaveLength(1);
     expect(html).toContain("acme");
     expect(html).toContain("octocat");
+    // Production intake is unavailable: the not-enabled board, with its reason visible.
+    expect(html).toContain(NOT_ENABLED_TITLE);
+    expect(html).toContain(IDEA_INTAKE_UNAVAILABLE_REASON);
+    // The installation's repository is a filter option.
     expect(html).toContain("acme/api-gateway");
-    expect(html).toContain("main");
-    expect(html).toMatch(/<form[^>]*action="\/api\/github\/refresh"[^>]*method="post"/);
-    expect(html).toContain("Refresh");
+    // The repository and discovery surface lives on /repositories now.
+    expect(html).not.toMatch(/<table/);
+    expect(html).not.toContain("/api/github/refresh");
+    expect(html).not.toContain(INSTALLATION_REQUIRED_EXPLANATION);
+    // Task 6.3: Board is the current navigation item.
+    expect(html).toMatch(/<a href="\/" [^>]*aria-current="page"[^>]*>Board<\/a>/);
+    expect(html).not.toMatch(/<a href="\/repositories" [^>]*aria-current/);
   });
 
-  it("shows only the session installation's rows, never another installation's", async () => {
+  it("offers only the session installation's repositories, never another installation's", async () => {
     seedInstallation(7, "acme");
     seedInstallation(8, "beta-org");
     upsertInstallationRepository(getDriver(), { installationId: 7, githubRepoId: 101, fullName: "acme/api-gateway" });
@@ -131,47 +144,21 @@ describe("HomePage — signed-in surface inside the shell", () => {
     expect(html).not.toContain("beta-org/secret");
   });
 
-  it("keeps the installation-required empty state and offers no Refresh without an installation", async () => {
+  it("explains that an installation is required and links to Repositories when none is bound", async () => {
     signIn(null);
 
     const html = await renderPage();
 
     expect(html).toContain('data-shell-region="app-shell"');
     expect(html).toContain(INSTALLATION_REQUIRED_EXPLANATION);
+    expect(html).toMatch(/<a[^>]*href="\/repositories"[^>]*>Open Repositories<\/a>/);
     expect(html).toContain("No installation");
-    expect(html).not.toContain("/api/github/refresh");
-  });
-
-  it("keeps the no-accessible-repositories empty state for an installation with zero rows", async () => {
-    seedInstallation(7, "acme");
-    signIn(7);
-
-    const html = await renderPage();
-
-    expect(html).toContain(NO_ACCESSIBLE_REPOSITORIES_EXPLANATION);
-    expect(html).not.toMatch(/<td/);
-    expect(html).toContain('action="/api/github/refresh"');
-  });
-
-  it("renders no Idea / OpenSpec change / In progress / PR/MR column string anywhere in the shell", async () => {
-    seedInstallation(7, "acme");
-    upsertInstallationRepository(getDriver(), { installationId: 7, githubRepoId: 101, fullName: "acme/api-gateway" });
-    upsertInstallationRepository(getDriver(), { installationId: 7, githubRepoId: 102, fullName: "acme/legacy" });
-    upsertDiscoveryReport(getDriver(), {
-      installationId: 7,
-      githubRepoId: 102,
-      status: "unsupported",
-      defaultBranch: "main",
-      tipSha: "def456",
-      reason: "openspec/config.yaml was not found on main",
-    });
-    signIn(7);
-
-    const html = await renderPage();
-
-    for (const column of BOARD_COLUMNS) {
-      expect(html).not.toContain(column);
+    expect(html).toMatch(/<a href="\/" [^>]*aria-current="page"[^>]*>Board<\/a>/);
+    for (const title of LANE_TITLES) {
+      expect(html).not.toContain(title);
     }
+    expect(html).not.toContain(NOT_ENABLED_TITLE);
+    expect(html).not.toContain("/api/github/refresh");
   });
 });
 

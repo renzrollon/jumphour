@@ -56,6 +56,13 @@
   min-width: 0;
 }
 
+/* workflow-board-ui task 6.3: the Board / Repositories navigation. */
+.nav {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .controls {
   display: flex;
   align-items: center;
@@ -85,6 +92,11 @@
   }
 
   .search {
+    display: none;
+  }
+
+  /* workflow-board-ui task 6.3: the account menu carries the navigation instead. */
+  .nav {
     display: none;
   }
 

@@ -1,0 +1,39 @@
+/*
+ * workflow-board-ui task 6.1: the signed-in landing view when no GitHub App
+ * installation is bound — an explanation and a link, never lanes or cards.
+ */
+.installationRequired {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 48px 16px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-family: var(--fontSans);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.body {
+  margin: 0 0 16px;
+  color: var(--ink2);
+  font-size: 0.875rem;
+  text-wrap: pretty;
+}
+
+.link {
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

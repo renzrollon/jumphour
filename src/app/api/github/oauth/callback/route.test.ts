@@ -168,7 +168,7 @@ describe("GET /api/github/oauth/callback", () => {
     expect(completeRefreshCallback).not.toHaveBeenCalled();
   });
 
-  it("a refresh round trip re-lists the named installation and returns to the surface with a session", async () => {
+  it("a refresh round trip re-lists the named installation and returns to /repositories with a session", async () => {
     process.env.GITHUB_APP_CLIENT_ID = "client-id";
     process.env.GITHUB_APP_CLIENT_SECRET = "client-secret";
     vi.mocked(fetchUserInstallations).mockResolvedValueOnce([]);
@@ -179,7 +179,7 @@ describe("GET /api/github/oauth/callback", () => {
     );
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/repositories");
     const sessionId = response.cookies.get("jumphour_session")?.value;
     expect(sessionId).toBeTruthy();
     expect(countSessions()).toBe(1);

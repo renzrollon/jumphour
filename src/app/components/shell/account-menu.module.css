@@ -50,6 +50,14 @@
   overflow-wrap: anywhere;
 }
 
+/* workflow-board-ui task 6.3: the navigation, below 760px only. */
+.narrowNav {
+  display: none;
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
 .signOut {
   margin: 8px 0 0;
   padding-top: 8px;
@@ -81,5 +89,9 @@
 @media (max-width: 759.98px) {
   .trigger {
     max-width: 112px;
+  }
+
+  .narrowNav {
+    display: block;
   }
 }

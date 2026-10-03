@@ -1,0 +1,44 @@
+/*
+ * workflow-board-ui task 7.3: the /dev/ui/board preview strip — the
+ * persistent "Preview — fixture data" label with the displayed scenario, and
+ * the scenario links. The board below keeps its own styling.
+ */
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--amber);
+  background: var(--amberSoft);
+  color: var(--ink);
+  font-family: var(--fontSans);
+  font-size: 0.875rem;
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.scenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  min-width: 0;
+}
+
+.scenario {
+  color: var(--ink2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.scenario[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}

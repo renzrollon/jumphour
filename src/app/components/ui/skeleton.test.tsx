@@ -27,6 +27,21 @@ describe("Skeleton", () => {
     expect(hiddenBlocks).toHaveLength(3);
   });
 
+  it("shows its label above the blocks at every motion setting when labelVisible is set", () => {
+    render(<Skeleton label="Reconciling OpenSpec artifacts…" rows={2} labelVisible />);
+    const status = screen.getByRole("status", { name: "Reconciling OpenSpec artifacts…" });
+    const caption = status.firstElementChild!;
+    expect(caption.textContent).toBe("Reconciling OpenSpec artifacts…");
+    expect(caption.getAttribute("aria-hidden")).toBeNull();
+    expect(screen.getAllByText("Reconciling OpenSpec artifacts…")).toHaveLength(1);
+    expect(status.querySelectorAll('[aria-hidden="true"]')).toHaveLength(2);
+
+    const css = parseCssRules(readFileSync(join(import.meta.dirname, "skeleton.module.css"), "utf8"));
+    const visible = css.filter((rule) => rule.selector === ".visibleLabel");
+    expect(visible.every((rule) => rule.atRules.length === 0)).toBe(true);
+    expect(visible[0]!.declarations.map(([property]) => property)).not.toContain("clip-path");
+  });
+
   it("defaults to a single placeholder block", () => {
     render(<Skeleton label="Loading" />);
     expect(screen.getByRole("status").querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);

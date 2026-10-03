@@ -30,6 +30,11 @@ export interface MenuItem {
 export interface MenuProps extends TransientStateProps {
   /** Accessible name of the menu, e.g. "Load ideas from". */
   label: string;
+  /**
+   * A short notice shown above the items and linked to the menu by
+   * `aria-describedby`, e.g. "Read-only MCP fetch. No comments, reviews, or labels."
+   */
+  description?: ReactNode;
   renderTrigger: (props: TriggerProps) => ReactNode;
   items: readonly MenuItem[];
   /** Which trigger edge the menu lines up with. Default "end". */
@@ -43,7 +48,7 @@ function enabledIndexes(items: readonly MenuItem[]): number[] {
   return items.flatMap((item, index) => (item.disabled ? [] : [index]));
 }
 
-export function Menu({ label, renderTrigger, items, align = "end", className, ...state }: MenuProps) {
+export function Menu({ label, description, renderTrigger, items, align = "end", className, ...state }: MenuProps) {
   const [open, setOpen] = useTransientOpen(state);
   const [landing, setLanding] = useState<Landing>("first");
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -51,6 +56,7 @@ export function Menu({ label, renderTrigger, items, align = "end", className, ..
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const initialFocusRef = useRef<HTMLElement | null>(null);
   const id = useId();
+  const descriptionId = `${id}-description`;
 
   const enabled = enabledIndexes(items);
   const landingIndex = landing === "first" ? enabled[0] : enabled[enabled.length - 1];
@@ -137,10 +143,12 @@ export function Menu({ label, renderTrigger, items, align = "end", className, ..
           id={id}
           role="menu"
           aria-label={label}
+          aria-describedby={description ? descriptionId : undefined}
           tabIndex={-1}
           className={surfaceClasses}
           onKeyDown={onMenuKeyDown}
         >
+          {description ? <div id={descriptionId}>{description}</div> : null}
           {items.map((item, index) => (
             <button
               key={item.id}

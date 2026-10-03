@@ -4,7 +4,7 @@ import { getEnv } from "../../../../../server/env";
 import { exchangeOAuthCode, fetchGithubUser, fetchUserInstallations } from "../../../../../server/github/oauth";
 import { completeOAuthSignIn, type OAuthSignInOutcome } from "../../../../../server/github/oauth-session";
 import { recoverMissedInstallations } from "../../../../../server/github/recover-installations";
-import { decodeRefreshState } from "../../../../../server/github/refresh-return-state";
+import { REFRESH_RETURN_PATH, decodeRefreshState } from "../../../../../server/github/refresh-return-state";
 import { completeRefreshCallback } from "../../../../../server/github/complete-refresh-callback";
 import { refreshInstallationFromGithub } from "../../../../../server/github/refresh-installation";
 import { mintInstallationToken } from "../../../../../server/github/app-client";
@@ -24,7 +24,7 @@ const SESSION_COOKIE = "jumphour_session";
 // token, and the repository listing call requires one (design.md Decision
 // 2). A callback whose `state` decodes as a refresh marker re-lists and
 // re-discovers for the named installation and then redirects to the
-// signed-in surface.
+// repository and discovery view (REFRESH_RETURN_PATH).
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -93,16 +93,18 @@ export async function GET(request: Request) {
       userAccessToken,
     });
 
-    // Land the browser back on the signed-in surface, which re-renders from
-    // the rows the refresh just overwrote.
-    const response = NextResponse.redirect(new URL("/", request.url), { status: 303 });
+    // Land the browser back on the repository and discovery view
+    // (workflow-board-ui task 6.4), which re-renders from the rows the
+    // refresh just overwrote — not on the board a plain sign-in lands on.
+    const response = NextResponse.redirect(new URL(REFRESH_RETURN_PATH, request.url), { status: 303 });
     setSessionCookie(response, outcome.sessionId);
     return response;
   }
 
   if (outcome.signedIn) {
-    // Design.md Decision 6: a plain sign-in lands on the application, the
-    // same landing the refresh branch above performs.
+    // Design.md Decision 6: a plain sign-in lands on the application — the
+    // workflow board at `/`. Only the refresh branch above returns to
+    // REFRESH_RETURN_PATH.
     const response = NextResponse.redirect(new URL("/", request.url), { status: 303 });
     setSessionCookie(response, outcome.sessionId);
     return response;

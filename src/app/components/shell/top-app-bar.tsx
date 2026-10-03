@@ -15,9 +15,10 @@
 //   - workspace: 8.2's `WorkspaceElement`, from `resolveWorkspace()` over
 //     `getInstallation()` — the account login, the neutral "No installation"
 //     (design.md Decision 8), or a switcher with two or more installations.
-//   - search: reserved space only. Change 2 (a different OpenSpec change)
-//     wires the actual search control into it; nothing here measures or
-//     assumes its eventual contents.
+//   - search: whatever the view passes as `search` (workflow-board-ui task
+//     4.4: the board's search field). A view that passes nothing — the
+//     repositories page — leaves the slot empty and hidden from assistive
+//     technology; nothing here measures or assumes its contents.
 //   - theme control / cats toggle: 8.4's `ThemeControl`/`CatsToggle`, over
 //     the server-read appearance and the appearance server actions.
 //   - settings entry: 8.5's `SettingsPopover`, a `Popover` whose trigger is
@@ -32,6 +33,14 @@
 // and the `wideOnly` theme/cats slots; both preferences stay changeable in
 // the settings popover, and the settings entry and account menu stay in the
 // bar. CSS only (design.md Decision 10) — nothing here reads the width.
+//
+// workflow-board-ui task 6.3: a view that names its `currentNav` gets the
+// Board / Repositories navigation (./shell-nav.tsx) between the workspace
+// element and the search slot at 760px and above; below 760px the module
+// CSS hides it here and the account menu carries the same list instead.
+// It is not a `data-shell-slot` region, so the seven regions above keep
+// their fixed order and count.
+import type { ReactNode } from "react";
 import { NO_WORKSPACE, type WorkspaceView } from "./workspace";
 import { UNKNOWN_ACCOUNT, type AccountView } from "./account";
 import { AccountMenu } from "./account-menu";
@@ -40,6 +49,7 @@ import { CatsToggle } from "./cats-toggle";
 import { SettingsPopover } from "./settings-popover";
 import { DEFAULT_APPEARANCE, type Appearance } from "../../../lib/appearance/appearance";
 import { WorkspaceElement } from "./workspace-element";
+import { ShellNav, type ShellNavId } from "./shell-nav";
 import styles from "./top-app-bar.module.css";
 
 export interface TopAppBarProps {
@@ -49,9 +59,20 @@ export interface TopAppBarProps {
   account?: AccountView;
   /** Task 8.4: the server-read preference (`parseAppearance()`); defaults to Light, cats off. */
   appearance?: Appearance;
+  /** The view's search control for the search slot; omitted, the slot stays empty. */
+  search?: ReactNode;
+  /** Task 6.3: the signed-in navigation item this view is; omitted, no navigation renders. */
+  currentNav?: ShellNavId;
 }
 
-export function TopAppBar({ workspace = NO_WORKSPACE, account = UNKNOWN_ACCOUNT, appearance = DEFAULT_APPEARANCE }: TopAppBarProps = {}) {
+export function TopAppBar({
+  workspace = NO_WORKSPACE,
+  account = UNKNOWN_ACCOUNT,
+  appearance = DEFAULT_APPEARANCE,
+  search,
+  currentNav,
+}: TopAppBarProps = {}) {
+  const hasSearch = search !== undefined && search !== null && search !== false;
   return (
     <header className={styles.bar} data-shell-region="top-app-bar">
       <div className={styles.brand} data-shell-slot="mark">
@@ -80,7 +101,15 @@ export function TopAppBar({ workspace = NO_WORKSPACE, account = UNKNOWN_ACCOUNT,
         <WorkspaceElement workspace={workspace} />
       </div>
 
-      <div className={styles.search} data-shell-slot="search" aria-hidden="true" />
+      {currentNav !== undefined ? (
+        <div className={styles.nav}>
+          <ShellNav current={currentNav} placement="bar" />
+        </div>
+      ) : null}
+
+      <div className={styles.search} data-shell-slot="search" aria-hidden={hasSearch ? undefined : "true"}>
+        {hasSearch ? search : null}
+      </div>
 
       <div className={styles.controls}>
         <div className={styles.wideOnly} data-shell-slot="theme-control">
@@ -93,7 +122,7 @@ export function TopAppBar({ workspace = NO_WORKSPACE, account = UNKNOWN_ACCOUNT,
           <SettingsPopover appearance={appearance} />
         </div>
         <div data-shell-slot="account-menu">
-          <AccountMenu account={account} />
+          <AccountMenu account={account} currentNav={currentNav} />
         </div>
       </div>
     </header>

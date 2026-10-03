@@ -76,10 +76,16 @@ describe("preview fixture isolation", () => {
     const tree = sourceTree();
     expect([...tree.keys()].some(isFixture)).toBe(true);
     expect(moduleSpecifiers(tree.get(at("app", "dev", "ui", "page.tsx"))!)).toContain("./fixtures/shell");
+    expect(tree.has(at("app", "dev", "ui", "fixtures", "board.ts"))).toBe(true);
+    const files = [...tree.keys()];
+    for (const dir of [at("server", "board") + sep, at("lib") + sep, at("app", "components", "board") + sep]) {
+      expect(files.filter((file) => file.startsWith(dir) && isProduction(file)), `no production modules scanned under ${dir}`).not.toEqual([]);
+    }
   });
 
   it("is reached by no module under src/server and no production route, page, or component", () => {
-    expect(fixtureReach(sourceTree())).toEqual([]);
+    const reach = fixtureReach(sourceTree());
+    expect(reach, `production modules reaching a preview fixture: ${reach.join("; ")}`).toEqual([]);
   });
 
   describe("fails when a production module reaches a fixture", () => {

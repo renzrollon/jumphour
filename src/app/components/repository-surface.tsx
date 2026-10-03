@@ -7,7 +7,7 @@
 // the same rows, and the same Refresh form posting to /api/github/refresh.
 // Only the layout around them is new; which rows are shown, what the empty
 // state says, and what Refresh targets are all decided by the caller
-// (src/app/page.tsx) exactly as before.
+// (src/app/repositories/page.tsx, workflow-board-ui task 6.2) exactly as before.
 //
 // No Idea / OpenSpec change / In progress / PR/MR board column is rendered
 // here: RepositoryTable's fixed REPOSITORY_TABLE_COLUMNS is the only column

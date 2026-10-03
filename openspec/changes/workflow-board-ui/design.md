@@ -143,6 +143,17 @@ Two structure tests back the `ui-preview-gallery` spec: one walks `src/app/dev/u
 
 Pure functions (`filter-cards`, `listener-text`, `format-relative-time`, `source-presentation`, `lanes`, `parseScenario`) and the provider are tested in the default `node` environment. Static presentation (card, lane header, empty states, skeleton) uses `renderToStaticMarkup`, like the existing component tests. Interaction (filters, search, selection + address, menus, lane selector, disabled manual reads) uses change 1's pinned `jsdom@30.1.0` + `@testing-library/react@16.3.3` + `@testing-library/user-event@14.6.7` with a per-file `// @vitest-environment jsdom` docblock. This change adds no dependency.
 
+### 12. Deliberate deviations from the prototype
+
+Task 8.2 compares `/dev/ui/board` against the prototype. These differences are intended and are not fidelity defects:
+
+- **Card markup** — article + heading + stretched button instead of a whole-card `<button>` (Decision 5).
+- **Owner avatar colors** — token pairs instead of the prototype's light-only hex literals (Decision 5).
+- **Healthy listener wording is one phrase on every lane.** The prototype's PR/MR header reads "Last successful listen 14 min ago" while healthy; the board reads "Last heard 14 min ago". The spec fixes healthy wording as "Last heard …" ("Show a truthful listener state on every lane"); "Last successful listen" belongs to a delayed listener only.
+- **A degraded listener says so in words.** In `source-error` the prototype marks the PR/MR lane only by coloring "Last successful listen 48 min ago" amber. The board reads "Listening delayed · Last successful listen 48 min ago", in amber, because state is never carried by color alone (design-system spec). In Progress keeps the prototype's "Listening delayed · retrying".
+- **Icon geometry** — the external-host mark and the other icons come from change 1's 16×16 icon set, not the prototype's SVG paths.
+- **Loading placeholders** — a lane reading data shows its `loadingLabel` as a visible caption at any motion setting (as the prototype does). The shimmer stops under reduced motion.
+
 ## Risks / Trade-offs
 
 - **[An empty board reads as "broken"]** → The not-enabled state says why and names what will populate it; the preview shows the populated design. The alternative — sample cards in production — is the failure the epic warns about.

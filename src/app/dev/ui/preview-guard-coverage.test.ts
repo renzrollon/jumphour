@@ -90,10 +90,12 @@ describe("preview guard coverage", () => {
   it("finds the /dev/ui index among the preview pages", () => {
     const pages = listFiles(PREVIEW_ROOT).filter((file) => PAGE_FILE.test(file.slice(dirname(file).length + 1)));
     expect(pages).toContain(join(PREVIEW_ROOT, "page.tsx"));
+    expect(pages).toContain(join(PREVIEW_ROOT, "board", "page.tsx"));
   });
 
   it("finds every page under src/app/dev/ui calling the guard first", () => {
-    expect(unguardedPages(PREVIEW_ROOT)).toEqual([]);
+    const unguarded = unguardedPages(PREVIEW_ROOT);
+    expect(unguarded, `unguarded preview pages under src/app/dev/ui/: ${unguarded.join("; ")}`).toEqual([]);
   });
 
   it("accepts a guarded page at any depth", () => {

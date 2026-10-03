@@ -11,7 +11,9 @@ import { cleanup, render } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { CardViewModel } from "../../../lib/board/board-view-model";
 import { isTestFile, listFiles, readSource, stripComments } from "../../../source-scan.testing";
+import { BoardCard } from "../board/board-card";
 import { Badge } from "./badge";
 import { Banner, type BannerTone } from "./banner";
 import { SOURCE_KINDS, SOURCE_LABELS, SourceBadge } from "./source-badge";
@@ -84,7 +86,12 @@ describe("never convey state by color alone", () => {
       .filter((file) => !isTestFile(file))
       .filter((file) => /\bToneDot\b|\btone\??\s*:/.test(stripComments(readSource(file))))
       .map((file) => file.slice(COMPONENTS_ROOT.length));
-    expect(toneBearing).toEqual([join("ui", "badge.tsx"), join("ui", "banner.tsx"), join("ui", "tone-dot.tsx")]);
+    expect(toneBearing).toEqual([
+      join("board", "board-card.tsx"),
+      join("ui", "badge.tsx"),
+      join("ui", "banner.tsx"),
+      join("ui", "tone-dot.tsx"),
+    ]);
   });
 
   describe("ToneDot", () => {
@@ -142,6 +149,34 @@ describe("never convey state by color alone", () => {
       const message = field.querySelector(`#${CSS.escape(input.getAttribute("aria-describedby")!)}`);
       expect(message?.textContent).toBe("Use lowercase letters and dashes.");
       expectNamedState(field, "Use lowercase letters and dashes.");
+    });
+  });
+
+  describe("BoardCard", () => {
+    const GENERATED_AT = "2026-09-15T09:30:00.000Z";
+    const card = (tone: Tone, text: string): CardViewModel => ({
+      id: `card-${tone}`,
+      laneId: "pr-mr",
+      source: { kind: "github-issue", key: "PR #476" },
+      title: "Harden shell deep-link parsing",
+      changeName: null,
+      repository: null,
+      owner: null,
+      relevance: null,
+      freshness: { kind: "fetched", at: GENERATED_AT },
+      evidence: { tone, text },
+      agentNote: null,
+      footer: "Opened Sep 8",
+      externalHostLabel: "github.com",
+    });
+
+    it.each(TONES)("states the %s evidence in text beside its hidden dot", (tone) => {
+      const article = renderOne(<BoardCard card={card(tone, STATE_LABELS[tone])} generatedAt={GENERATED_AT} selected={false} />);
+      const evidence = article.querySelector("[data-evidence-tone]")!;
+      expect(evidence.getAttribute("data-evidence-tone")).toBe(tone);
+      expect(evidence.querySelector('[aria-hidden="true"]')).not.toBeNull();
+      expectNamedState(evidence, STATE_LABELS[tone]);
+      expect(announced(evidence)).toBe(STATE_LABELS[tone]);
     });
   });
 

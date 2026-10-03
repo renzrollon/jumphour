@@ -9,6 +9,9 @@
 // `label` text, otherwise visually hidden, is shown under the blocks, so a
 // still placeholder reads as "loading" rather than as empty or finished
 // (spec: "Honor the viewer's reduced-motion setting", Failure scenario).
+//
+// `labelVisible` shows the label above the blocks at every motion setting —
+// the board's loading lanes name what they are reading, as the prototype does.
 import styles from "./skeleton.module.css";
 
 export interface SkeletonProps {
@@ -21,17 +24,20 @@ export interface SkeletonProps {
   label: string;
   /** Number of placeholder blocks to show. Default 1. */
   rows?: number;
+  /** Show `label` above the blocks whatever the motion setting. Default false. */
+  labelVisible?: boolean;
   className?: string;
 }
 
-export function Skeleton({ label, rows = 1, className }: SkeletonProps) {
+export function Skeleton({ label, rows = 1, labelVisible = false, className }: SkeletonProps) {
   const classes = [styles.group, className].filter(Boolean).join(" ");
   return (
     <div role="status" aria-busy="true" aria-label={label} className={classes}>
+      {labelVisible ? <span className={styles.visibleLabel}>{label}</span> : null}
       {Array.from({ length: rows }, (_, index) => (
         <span key={index} aria-hidden="true" className={styles.block} />
       ))}
-      <span className={styles.label}>{label}</span>
+      {labelVisible ? null : <span className={styles.label}>{label}</span>}
     </div>
   );
 }

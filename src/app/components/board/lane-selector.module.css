@@ -1,0 +1,72 @@
+/*
+ * Task 5.5: the small-screen lane selector's look. Whether it is shown at all
+ * is board.module.css's job (the 760px media rules). The current tab is marked
+ * by a 2px underline and a bordered surface (a shape change) as well as
+ * aria-selected, never by color alone.
+ *
+ * `position: relative` makes the tablist the containing block for the
+ * visually hidden count text, which is absolutely positioned; without it that
+ * text resolves against the page and widens it past a 400px viewport.
+ */
+.tablist {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-bottom-width: 2px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  border-color: var(--border2);
+  border-bottom-color: var(--accent);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.title {
+  white-space: nowrap;
+}
+
+.count {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface3);
+  color: var(--ink2);
+  font-family: var(--fontMono);
+  font-size: 12px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

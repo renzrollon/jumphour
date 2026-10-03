@@ -1,0 +1,27 @@
+/*
+ * workflow-board-ui task 6.5: the board's load-failure view — a title, one
+ * line of explanation, and Retry. No lane, card, or count.
+ */
+.error {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 48px 16px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-family: var(--fontSans);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.body {
+  margin: 0 0 16px;
+  color: var(--ink2);
+  font-size: 0.875rem;
+  text-wrap: pretty;
+}

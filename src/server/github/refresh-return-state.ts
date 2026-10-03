@@ -30,6 +30,17 @@
 // than by replacing this value. `decodeRefreshState` already tolerates
 // unknown extra segments for that reason.
 
+/**
+ * workflow-board-ui task 6.4 (specs/github-app-installation/spec.md, as
+ * MODIFIED: "Refreshing repositories and discovery SHALL return the user to
+ * the repository and discovery view"; design.md Decisions 4 and 9): where
+ * every Refresh lands — both early redirects in
+ * ../../app/api/github/refresh/route.ts and the refresh branch of
+ * ../../app/api/github/oauth/callback/route.ts. A plain sign-in still lands
+ * on `/` (the board); only Refresh uses this path.
+ */
+export const REFRESH_RETURN_PATH = "/repositories";
+
 const REFRESH_PREFIX = "refresh";
 const SEPARATOR = ":";
 

@@ -107,14 +107,14 @@ describe("POST /api/github/refresh", () => {
     });
   });
 
-  it("redirects back to the signed-in surface with no session cookie", async () => {
+  it("redirects to /repositories with no session cookie", async () => {
     const response = await POST(refreshRequest());
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/repositories");
   });
 
-  it("redirects to the surface, not to GitHub, when the session has no current installation", async () => {
+  it("redirects to /repositories, not to GitHub, when the session has no current installation", async () => {
     process.env.GITHUB_APP_CLIENT_ID = "Iv1.testclientid";
     insertInstallation(1);
     insertSession("sess-1", null);
@@ -123,10 +123,10 @@ describe("POST /api/github/refresh", () => {
 
     expect(response.status).toBe(303);
     // There is nothing to name in `state`, so no OAuth trip is started.
-    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/repositories");
   });
 
-  it("redirects to the surface when OAuth is not configured, and changes no stored row", async () => {
+  it("redirects to /repositories when OAuth is not configured, and changes no stored row", async () => {
     insertInstallation(1);
     insertSession("sess-1", 1);
     upsertInstallationRepository(getDriver(), { installationId: 1, githubRepoId: 42, fullName: "acme/api-gateway" });
@@ -134,7 +134,7 @@ describe("POST /api/github/refresh", () => {
     const response = await POST(refreshRequest("jumphour_session=sess-1"));
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/repositories");
     const row = getDriver().get<{ full_name: string }>(
       "SELECT full_name FROM installation_repositories WHERE installation_id = ? AND github_repo_id = ?",
       [1, 42],
@@ -142,13 +142,13 @@ describe("POST /api/github/refresh", () => {
     expect(row?.full_name).toBe("acme/api-gateway");
   });
 
-  it("ignores an unknown session cookie and still redirects to the surface", async () => {
+  it("ignores an unknown session cookie and still redirects to /repositories", async () => {
     process.env.GITHUB_APP_CLIENT_ID = "Iv1.testclientid";
 
     const response = await POST(refreshRequest("jumphour_session=does-not-exist"));
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/repositories");
   });
 
   it("issues no GitHub API call of its own — the callback does the work", async () => {
