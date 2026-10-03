@@ -1,0 +1,32 @@
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.accent {
+  background: var(--accentSoft);
+  color: var(--accent);
+}
+
+.green {
+  background: var(--greenSoft);
+  color: var(--green);
+}
+
+.amber {
+  background: var(--amberSoft);
+  color: var(--amber);
+}
+
+.jira {
+  background: var(--jiraSoft);
+  color: var(--jira);
+}

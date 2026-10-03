@@ -1,0 +1,40 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+  flex: none;
+  letter-spacing: 0.01em;
+  background: var(--surface3);
+  color: var(--ink2);
+}
+
+.neutral {
+  background: var(--surface3);
+  color: var(--ink2);
+}
+
+.ok {
+  background: var(--greenSoft);
+  color: var(--green);
+}
+
+.warn {
+  background: var(--amberSoft);
+  color: var(--amber);
+}
+
+.bad {
+  background: var(--redSoft);
+  color: var(--red);
+}
+
+.accent {
+  background: var(--accentSoft);
+  color: var(--accent);
+}

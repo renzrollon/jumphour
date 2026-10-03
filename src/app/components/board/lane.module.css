@@ -1,0 +1,24 @@
+/*
+ * Task 3.6: one lane — header over a vertically scrolling card list
+ * (prototype lines 172, 208). Width and small-screen visibility belong to the
+ * board layout (task 5.5), not to the lane.
+ */
+.lane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px;
+  overflow-y: auto;
+}

@@ -1,0 +1,14 @@
+/* Task 5.5: only SpinnerIcon animates (the "in-progress indicator" motion
+ * design.md Decision 1 and specs/design-system/spec.md's reduced-motion
+ * requirement both call out as allowed functional motion). globals.css's
+ * `@media (prefers-reduced-motion: reduce)` block already neutralizes this
+ * animation globally; nothing here needs to repeat that query. */
+.spin {
+  animation: jhIconSpin 0.9s linear infinite;
+}
+
+@keyframes jhIconSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

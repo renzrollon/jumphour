@@ -1,0 +1,138 @@
+/*
+ * Jumphour design tokens (design.md Decision 1). Names and values are the Claude
+ * Design prototype's, verbatim, except where a value fell below the WCAG AA
+ * floor contrast.test.ts enforces: --border2 (the control border, both
+ * presentations) and light --gl are darkened to clear it. Two tokens are
+ * Jumphour's own, added beside them (fix-control-state-contrast design.md
+ * Decision 1): --redInk, the danger button's label, and --redHover, its hover
+ * fill, following --accentInk / --accentHover. A contrast regression is a diff
+ * to this file.
+ *
+ * Presentation is resolved by the cascade alone (Decision 3). The layout stamps
+ * data-jh-theme="light" or "dark" on <html> for an explicit choice and nothing
+ * for "system":
+ *   - bare :root                          -> light
+ *   - prefers dark, not explicitly light  -> dark (tracks the OS live)
+ *   - explicitly dark                     -> dark
+ * The two dark blocks must define exactly the light block's token names;
+ * tokens.test.ts enforces that.
+ */
+
+/* Presentation-independent: the faces come from next/font variables set by fonts.ts. */
+:root {
+  --fontSans: var(--font-instrument-sans), system-ui, sans-serif;
+  --fontMono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+/* Light presentation (default). */
+:root {
+  color-scheme: light;
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --surface2: #f1efea;
+  --surface3: #e9e6df;
+  --border: #e2dfd7;
+  --border2: #8c8982;
+  --ink: #1c1b18;
+  --ink2: #514e47;
+  --ink3: #77736a;
+  --accent: #4338ca;
+  --accentHover: #3730a3;
+  --accentSoft: #e9e7fb;
+  --accentInk: #ffffff;
+  --green: #1e7a46;
+  --greenSoft: #e3f3e9;
+  --amber: #9a5b00;
+  --amberSoft: #fbefd9;
+  --red: #b3261e;
+  --redSoft: #fbe5e3;
+  --redInk: #ffffff;
+  --redHover: #9c2019;
+  --shadow: 0 1px 2px rgba(28,27,24,.06), 0 4px 14px rgba(28,27,24,.05);
+  --shadowLg: 0 12px 40px rgba(28,27,24,.16);
+  --term: #14130f;
+  --termInk: #e8e6df;
+  --gh: #24292f;
+  --ghInk: #ffffff;
+  --gl: #c53a24;
+  --glSoft: #fdebe7;
+  --jira: #1d4ed8;
+  --jiraSoft: #e6edfb;
+  --skeleton: linear-gradient(90deg, #efede8 25%, #e5e2da 50%, #efede8 75%);
+}
+
+/* Dark presentation while the theme is System and the OS asks for dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-jh-theme="light"]) {
+    color-scheme: dark;
+    --bg: #141412;
+    --surface: #1d1d1a;
+    --surface2: #242421;
+    --surface3: #2c2c28;
+    --border: #2f2f2a;
+    --border2: #6e6e69;
+    --ink: #ecebe6;
+    --ink2: #b9b7ae;
+    --ink3: #8b8981;
+    --accent: #a5a0f5;
+    --accentHover: #b9b5f8;
+    --accentSoft: #2a2850;
+    --accentInk: #14130f;
+    --green: #5fc78a;
+    --greenSoft: #17301f;
+    --amber: #e0a84a;
+    --amberSoft: #332711;
+    --red: #f08a83;
+    --redSoft: #3a1c1a;
+    --redInk: #14130f;
+    --redHover: #f4a19b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    --shadowLg: 0 12px 40px rgba(0,0,0,.6);
+    --term: #0d0d0b;
+    --termInk: #e8e6df;
+    --gh: #e6e6e6;
+    --ghInk: #111111;
+    --gl: #fc6d26;
+    --glSoft: #3a2216;
+    --jira: #7ea2f5;
+    --jiraSoft: #1a2540;
+    --skeleton: linear-gradient(90deg, #242421 25%, #2c2c28 50%, #242421 75%);
+  }
+}
+
+/* Dark presentation when the viewer explicitly chose Dark. */
+:root[data-jh-theme="dark"] {
+  color-scheme: dark;
+  --bg: #141412;
+  --surface: #1d1d1a;
+  --surface2: #242421;
+  --surface3: #2c2c28;
+  --border: #2f2f2a;
+  --border2: #6e6e69;
+  --ink: #ecebe6;
+  --ink2: #b9b7ae;
+  --ink3: #8b8981;
+  --accent: #a5a0f5;
+  --accentHover: #b9b5f8;
+  --accentSoft: #2a2850;
+  --accentInk: #14130f;
+  --green: #5fc78a;
+  --greenSoft: #17301f;
+  --amber: #e0a84a;
+  --amberSoft: #332711;
+  --red: #f08a83;
+  --redSoft: #3a1c1a;
+  --redInk: #14130f;
+  --redHover: #f4a19b;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  --shadowLg: 0 12px 40px rgba(0,0,0,.6);
+  --term: #0d0d0b;
+  --termInk: #e8e6df;
+  --gh: #e6e6e6;
+  --ghInk: #111111;
+  --gl: #fc6d26;
+  --glSoft: #3a2216;
+  --jira: #7ea2f5;
+  --jiraSoft: #1a2540;
+  --skeleton: linear-gradient(90deg, #242421 25%, #2c2c28 50%, #242421 75%);
+}

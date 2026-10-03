@@ -1,0 +1,46 @@
+/* Task 5.6: every accent rule targets the badge element alone — a single
+ * class, no combinators — so no source color reaches the surface around it.
+ * source-badge.test.tsx pins that. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-family: var(--fontSans);
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+  flex: none;
+  letter-spacing: 0.01em;
+  background: var(--surface3);
+  color: var(--ink2);
+}
+
+.github {
+  background: var(--gh);
+  color: var(--ghInk);
+}
+
+.gitlab {
+  background: var(--glSoft);
+  color: var(--gl);
+}
+
+.jira {
+  background: var(--jiraSoft);
+  color: var(--jira);
+}
+
+.manual {
+  background: var(--surface3);
+  color: var(--ink2);
+}
+
+/* Without color, the outline keeps the badge's shape and the text names it. */
+@media (forced-colors: active) {
+  .badge {
+    border-color: CanvasText;
+  }
+}

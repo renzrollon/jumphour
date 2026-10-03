@@ -1,0 +1,106 @@
+/*
+ * Task 4.2: the Load ideas / Fetch PRs/MRs menu-button. The source dot is
+ * decoration beside a text label; "MCP" is text, not a color.
+ */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--border2);
+}
+
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.compact {
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.unavailable {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.reason {
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.menu {
+  width: 280px;
+}
+
+.notice {
+  display: block;
+  margin: 4px 8px 8px;
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.dotGithub {
+  background: var(--gh);
+}
+
+.dotGitlab {
+  background: var(--gl);
+}
+
+.dotJira {
+  background: var(--jira);
+}
+
+.dotManual {
+  background: var(--ink3);
+}
+
+.mcp {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

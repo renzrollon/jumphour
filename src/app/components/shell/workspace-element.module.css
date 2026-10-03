@@ -1,0 +1,22 @@
+/*
+ * Task 8.2: the workspace element. A long account login is shortened with an
+ * ellipsis and its full value stays available through the title attribute;
+ * min-width: 0 lets it shrink inside the bar instead of overflowing it.
+ */
+.label {
+  display: block;
+  min-width: 0;
+  font-family: var(--fontSans);
+  font-size: 0.875rem;
+  color: var(--ink2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}

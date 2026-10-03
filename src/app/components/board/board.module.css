@@ -1,0 +1,82 @@
+/*
+ * Task 5.1: the board screen — toolbar over the lane row. At board widths the
+ * four lanes sit side by side and scroll horizontally when they do not fit;
+ * each lane keeps a readable width (prototype line 172: flex 1 0 272px,
+ * max-width 440px) rather than being compressed into a strip.
+ */
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compose {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The prototype's "+" before Compose idea; decorative, outside the accessible name. */
+.composeGlyph {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.reason {
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.lanes {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 0;
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+}
+
+.lanes > * {
+  flex: 1 0 272px;
+  max-width: 440px;
+}
+
+/*
+ * Task 5.5 (design.md Decision 7): responsive behavior is CSS-only. All four
+ * lanes stay in the DOM; `.lanes[data-active-lane]` names the lane a small
+ * screen shows. Under 760px only that lane is displayed and the lane selector
+ * is shown; at 760px and above the selector is `display: none` (so it leaves
+ * the accessibility tree) and the lanes sit side by side in the scrolling row.
+ * The lane rules use attribute selectors so they outrank the lane's own
+ * `display: flex` whatever order the stylesheets load in.
+ */
+.laneSelector {
+  padding: 8px 16px 0;
+}
+
+@media (max-width: 759.98px) {
+  .lanes {
+    overflow-x: visible;
+  }
+
+  .lanes > [data-lane-id] {
+    display: none;
+    flex: 1 1 auto;
+    max-width: none;
+  }
+
+  .lanes[data-active-lane="idea"] > [data-lane-id="idea"],
+  .lanes[data-active-lane="openspec-change"] > [data-lane-id="openspec-change"],
+  .lanes[data-active-lane="in-progress"] > [data-lane-id="in-progress"],
+  .lanes[data-active-lane="pr-mr"] > [data-lane-id="pr-mr"] {
+    display: flex;
+  }
+}
+
+@media (min-width: 760px) {
+  .laneSelector {
+    display: none;
+  }
+}
